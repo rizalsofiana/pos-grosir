@@ -1,0 +1,31 @@
+## V1 — Fondasi POS
+- Login & Role
+- Dashboard
+- Produk
+- Kategori
+- Supplier
+- Customer
+- Pembelian
+- Penjualan
+- Pembayaran
+- Cetak Struk
+- Manajemen Stok
+- Harga
+- Diskon
+- Laporan Dasar
+- Pengaturan
+## V2 — Operasional
+- Retur
+- Stock Opname
+- Audit Log
+- Import/Export Excel
+- Riwayat Harga
+- Hold Transaksi
+- Notifikasi
+- Backup Database
+## V3 — Pengembangan
+- Multi Gudang
+- Multi Cabang
+- Loyalty
+- Integrasi Marketplace
+- Analitik Lanjutan
