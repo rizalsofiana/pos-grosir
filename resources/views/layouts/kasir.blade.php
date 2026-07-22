@@ -13,20 +13,12 @@
         <aside class="w-72 shrink-0 bg-slate-900 p-6 text-white">
             <div class="mb-8">
                 <h2 class="text-xl font-semibold">POS Grosir</h2>
-                <p class="text-sm text-slate-400">Panel Admin</p>
+                <p class="text-sm text-slate-400">Panel Kasir</p>
             </div>
 
             <nav class="space-y-2">
                 <a href="{{ route('dashboard') }}"
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('dashboard') ? 'bg-slate-800' : '' }}">Dashboard</a>
-                <a href="{{ route('products') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('products*') ? 'bg-slate-800' : '' }}">Produk</a>
-                <a href="{{ route('categories') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('categories*') ? 'bg-slate-800' : '' }}">Kategori</a>
-                <a href="{{ route('suppliers') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('suppliers*') ? 'bg-slate-800' : '' }}">Supplier</a>
-                <a href="{{ route('customers') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('customers*') ? 'bg-slate-800' : '' }}">Customer</a>
                 <a href="{{ route('purchases') }}"
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">Pembelian</a>
                 <a href="{{ route('sales') }}"

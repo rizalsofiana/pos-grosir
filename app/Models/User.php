@@ -35,6 +35,17 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->role?->name === 'admin';
+    }
+
+    public function isKasir(): bool
+    {
+        return $this->role?->name === 'kasir';
+    }
+
+
     public function sales()
     {
         return $this->hasMany(Sale::class);

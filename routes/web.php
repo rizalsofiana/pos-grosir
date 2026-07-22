@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterDataController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,22 +17,30 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/products', [MasterDataController::class, 'products'])->name('products');
-    Route::post('/products', [MasterDataController::class, 'storeProduct'])->name('products.store');
+    Route::middleware('role:admin,kasir')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/categories', [MasterDataController::class, 'categories'])->name('categories');
-    Route::post('/categories', [MasterDataController::class, 'storeCategory'])->name('categories.store');
+        Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases');
+        Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
 
-    Route::get('/suppliers', [MasterDataController::class, 'suppliers'])->name('suppliers');
-    Route::post('/suppliers', [MasterDataController::class, 'storeSupplier'])->name('suppliers.store');
+        Route::get('/sales', [SaleController::class, 'index'])->name('sales');
+        Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+        Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
+    });
 
-    Route::get('/customers', [MasterDataController::class, 'customers'])->name('customers');
-    Route::post('/customers', [MasterDataController::class, 'storeCustomer'])->name('customers.store');
-});
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/products', [MasterDataController::class, 'products'])->name('products');
+        Route::post('/products', [MasterDataController::class, 'storeProduct'])->name('products.store');
 
-Route::middleware('role:admin')->get('/admin', function () {
-    return 'Admin dashboard';
+        Route::get('/categories', [MasterDataController::class, 'categories'])->name('categories');
+        Route::post('/categories', [MasterDataController::class, 'storeCategory'])->name('categories.store');
+
+        Route::get('/suppliers', [MasterDataController::class, 'suppliers'])->name('suppliers');
+        Route::post('/suppliers', [MasterDataController::class, 'storeSupplier'])->name('suppliers.store');
+
+        Route::get('/customers', [MasterDataController::class, 'customers'])->name('customers');
+        Route::post('/customers', [MasterDataController::class, 'storeCustomer'])->name('customers.store');
+    });
 });

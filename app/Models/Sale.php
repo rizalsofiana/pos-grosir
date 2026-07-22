@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Model;
 #[Table('sales')]
 class Sale extends Model
 {
+    protected $casts = [
+        'sale_date' => 'datetime',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
