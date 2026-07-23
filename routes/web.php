@@ -33,14 +33,23 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/products', [MasterDataController::class, 'products'])->name('products');
         Route::post('/products', [MasterDataController::class, 'storeProduct'])->name('products.store');
+        Route::put('/products/{product}', [MasterDataController::class, 'updateProduct'])->name('products.update');
+        Route::patch('/products/{product}/toggle', [MasterDataController::class, 'toggleProduct'])->name('products.toggle');
 
         Route::get('/categories', [MasterDataController::class, 'categories'])->name('categories');
         Route::post('/categories', [MasterDataController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [MasterDataController::class, 'updateCategory'])->name('categories.update');
+        Route::patch('/categories/{category}/toggle', [MasterDataController::class, 'toggleCategory'])->name('categories.toggle');
 
         Route::get('/suppliers', [MasterDataController::class, 'suppliers'])->name('suppliers');
         Route::post('/suppliers', [MasterDataController::class, 'storeSupplier'])->name('suppliers.store');
+        Route::put('/suppliers/{supplier}', [MasterDataController::class, 'updateSupplier'])->name('suppliers.update');
+        Route::patch('/suppliers/{supplier}/toggle', [MasterDataController::class, 'toggleSupplier'])->name('suppliers.toggle');
 
         Route::get('/customers', [MasterDataController::class, 'customers'])->name('customers');
         Route::post('/customers', [MasterDataController::class, 'storeCustomer'])->name('customers.store');
+        Route::put('/customers/{customer}', [MasterDataController::class, 'updateCustomer'])->name('customers.update');
+        Route::patch('/customers/{customer}/toggle', [MasterDataController::class, 'toggleCustomer'])->name('customers.toggle');
+
     });
 });

@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="rounded-xl bg-white p-4 shadow" x-data="purchaseForm()">
+        <div class="rounded-xl bg-white p-4 shadow" x-data="purchaseForm()" x-init="init()">
             <h2 class="mb-4 font-semibold">Tambah Pembelian</h2>
             <form method="POST" action="{{ route('purchases.store') }}" @submit="onSubmit" class="space-y-3">
                 @csrf
@@ -84,7 +84,7 @@
                             </div>
                         </template>
                     </div>
-                    <button type="button" @click="addItem"
+                    <button type="button" @click="addItem()"
                         class="mt-2 rounded border border-dashed px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
                         + Tambah Item
                     </button>
@@ -104,14 +104,16 @@
     </div>
 
     <?php
-    $mappedProducts = $products->map(function ($product) {
-        return [
-            'id' => $product->id,
-            'name' => $product->name,
-            'sku' => $product->sku,
-            'purchase_price' => $product->purchase_price,
-        ];
-    });
+    $mappedProducts = $products
+        ->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'sku' => $product->sku,
+                'purchase_price' => $product->purchase_price,
+            ];
+        })
+        ->values();
     ?>
 
     <script>

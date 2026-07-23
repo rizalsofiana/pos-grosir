@@ -6,10 +6,19 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['category_id', 'sku', 'name', 'purchase_price', 'selling_price', 'stock'])]
+#[Fillable(['category_id', 'sku', 'name', 'purchase_price', 'selling_price', 'stock', 'is_active'])]
 #[Table('products')]
 class Product extends Model
 {
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
