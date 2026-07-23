@@ -71,7 +71,7 @@
                         <div class="mb-2 rounded-lg border p-2">
                             <input type="hidden" :name="'items[' + index + '][product_id]'" :value="item.product_id">
                             <input type="hidden" :name="'items[' + index + '][price]'" :value="item.price">
-                            <input type="hidden" :name="'items[' + index + '][discount]'" :value="item.discount">
+                            <input type="hidden" :name="'items[' + index + '][quantity]'" :value="item.quantity">
                             <div class="mb-1 flex items-start justify-between gap-2">
                                 <span class="text-sm font-medium" x-text="item.name"></span>
                                 <button type="button" @click="removeItem(index)"
@@ -82,16 +82,23 @@
                                     <button type="button" @click="decrement(item)"
                                         class="h-6 w-6 rounded bg-slate-100 text-sm hover:bg-slate-200">-</button>
                                     <input type="number" min="1" :max="item.stock"
-                                        :name="'items[' + index + '][quantity]'" x-model.number="item.quantity"
-                                        class="w-12 rounded border text-center text-sm">
+                                        x-model.number="item.quantity" class="w-12 rounded border text-center text-sm">
                                     <button type="button" @click="increment(item)"
                                         class="h-6 w-6 rounded bg-slate-100 text-sm hover:bg-slate-200">+</button>
                                 </div>
                                 <span class="text-sm font-semibold"
                                     x-text="'Rp ' + (item.quantity * item.price).toLocaleString('id-ID')"></span>
                             </div>
+                            <template x-if="lineDiscount(item) > 0">
+                                <div class="mt-1 flex items-center justify-between text-xs text-green-600">
+                                    <span>Diskon otomatis</span>
+                                    <span x-text="'- Rp ' + lineDiscount(item).toLocaleString('id-ID')"></span>
+                                </div>
+                            </template>
                         </div>
                     </template>
+
+
                 </div>
 
                 <div class="shrink-0 space-y-2 border-t bg-slate-50 p-3">
@@ -99,10 +106,17 @@
                         <span class="text-slate-600">Sub Total</span>
                         <span x-text="'Rp ' + subTotal.toLocaleString('id-ID')"></span>
                     </div>
+                    <template x-if="totalDiscount > 0">
+                        <div class="flex justify-between text-sm text-green-600">
+                            <span>Diskon</span>
+                            <span x-text="'- Rp ' + totalDiscount.toLocaleString('id-ID')"></span>
+                        </div>
+                    </template>
                     <div class="flex justify-between text-lg font-semibold">
                         <span>Total</span>
-                        <span x-text="'Rp ' + subTotal.toLocaleString('id-ID')"></span>
+                        <span x-text="'Rp ' + grandTotal.toLocaleString('id-ID')"></span>
                     </div>
+
                     <button type="submit" :disabled="items.length === 0"
                         class="w-full rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
                         Proses Pembayaran
@@ -171,6 +185,20 @@
                 'sku' => $p->sku,
                 'selling_price' => (float) $p->selling_price,
                 'stock' => $p->stock,
+                'category_id' => $p->category_id,
+            ],
+        )
+        ->values();
+    
+    $mappedRules = $discountRules
+        ->map(
+            fn($r) => [
+                'scope' => $r->scope,
+                'product_id' => $r->product_id,
+                'category_id' => $r->category_id,
+                'min_qty' => $r->min_qty,
+                'discount_type' => $r->discount_type,
+                'discount_value' => (float) $r->discount_value,
             ],
         )
         ->values();
@@ -180,10 +208,12 @@
         function saleForm() {
             return {
                 allProducts: @json($mappedProducts),
+                discountRules: @json($mappedRules),
                 search: '',
                 items: [],
                 showHistory: false,
                 now: '',
+
                 init() {
                     const d = new Date();
                     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -210,8 +240,8 @@
                         name: product.name,
                         price: product.selling_price,
                         stock: product.stock,
+                        category_id: product.category_id,
                         quantity: 1,
-                        discount: 0,
                     });
                 },
                 removeItem(index) {
@@ -226,6 +256,29 @@
                 get subTotal() {
                     return this.items.reduce((sum, item) => sum + (item.quantity * item.price || 0), 0);
                 },
+                lineDiscount(item) {
+                    const applicable = this.discountRules.filter(r =>
+                        (r.scope === 'product' && r.product_id === item.product_id) ||
+                        (r.scope === 'category' && r.category_id === item.category_id));
+
+                    let best = 0;
+                    applicable.forEach(rule => {
+                        if (item.quantity < rule.min_qty) return;
+                        const lineTotal = item.quantity * item.price;
+                        let discount = rule.discount_type === 'percentage' ?
+                            lineTotal * (rule.discount_value / 100) :
+                            Math.min(rule.discount_value * item.quantity, lineTotal);
+                        if (discount > best) best = discount;
+                    });
+                    return Math.round(best);
+                },
+                get totalDiscount() {
+                    return this.items.reduce((sum, item) => sum + this.lineDiscount(item), 0);
+                },
+                get grandTotal() {
+                    return this.subTotal - this.totalDiscount;
+                },
+
                 onSubmit(event) {
                     if (this.items.length === 0) {
                         event.preventDefault();

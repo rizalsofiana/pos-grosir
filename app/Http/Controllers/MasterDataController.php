@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Customer;
+use App\Models\PriceHistory;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class MasterDataController extends Controller
 {
@@ -149,6 +152,21 @@ class MasterDataController extends Controller
             'selling_price' => ['required', 'numeric'],
             'stock' => ['required', 'integer', 'min:0'],
         ]);
+
+        $priceChanged = (float) $product->purchase_price !== (float) $data['purchase_price']
+            || (float) $product->selling_price !== (float) $data['selling_price'];
+
+        if ($priceChanged) {
+            PriceHistory::create([
+                'product_id' => $product->id,
+                'old_purchase_price' => $product->purchase_price,
+                'new_purchase_price' => $data['purchase_price'],
+                'old_selling_price' => $product->selling_price,
+                'new_selling_price' => $data['selling_price'],
+                'user_id' => Auth::id(),
+            ]);
+        }
+
         $product->update($data);
 
         return back()->with('success', 'Produk berhasil diperbarui.');
@@ -160,4 +178,14 @@ class MasterDataController extends Controller
 
         return back()->with('success', 'Status produk berhasil diperbarui.');
     }
+
+    public function priceHistory(Product $product)
+    {
+        return view('master-data.price-history', [
+            'product' => $product,
+            'histories' => $product->priceHistories()->with('user')->latest()->paginate(20),
+        ]);
+    }
 }
+
+

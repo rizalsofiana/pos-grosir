@@ -32,7 +32,16 @@
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">Pembelian</a>
                 <a href="{{ route('sales') }}"
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('sales*') ? 'bg-slate-800' : '' }}">Penjualan</a>
+                <a href="{{ route('stock') }}"
+                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('stock*') ? 'bg-slate-800' : '' }}">Stok</a>
+                <a href="{{ route('discounts') }}"
+                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('discounts*') ? 'bg-slate-800' : '' }}">Diskon</a>
+                <a href="{{ route('reports.sales') }}"
+                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('reports*') ? 'bg-slate-800' : '' }}">Laporan</a>
             </nav>
+
+
+
 
 
 

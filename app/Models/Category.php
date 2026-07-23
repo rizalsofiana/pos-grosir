@@ -23,4 +23,10 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function discountRules()
+    {
+        return $this->hasMany(DiscountRule::class);
+    }
 }
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseDetail;
+use App\Models\StockMovement;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,9 +51,23 @@ class PurchaseController extends Controller
                     'price' => $item['price'],
                 ]);
 
-                Product::where('id', $item['product_id'])->increment('stock', $item['quantity']);
+                $product = Product::lockForUpdate()->find($item['product_id']);
+                $stockBefore = $product->stock;
+                $product->increment('stock', $item['quantity']);
+
+                StockMovement::create([
+                    'product_id' => $product->id,
+                    'type' => 'in',
+                    'quantity' => $item['quantity'],
+                    'stock_before' => $stockBefore,
+                    'stock_after' => $stockBefore + $item['quantity'],
+                    'reference_type' => 'purchase',
+                    'reference_id' => $purchase->id,
+                    'user_id' => Auth::id(),
+                ]);
             }
         });
+
 
         return redirect()->route('purchases')->with('success', 'Transaksi pembelian berhasil disimpan.');
     }

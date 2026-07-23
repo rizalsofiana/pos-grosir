@@ -57,8 +57,20 @@
 
                                 <td class="py-2">
                                     <div class="flex gap-2">
+                                        <a href="{{ route('products.price-history', $product) }}"
+                                            class="text-slate-600 hover:underline" title="Riwayat Harga">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.988-.605l.448-.894a8 8 0 0 1 1.152.706zm1.766 1.517a8 8 0 0 0-.837-.74l.552-.833c.328.216.63.480.907.766zm1.29 1.87a7 7 0 0 0-.636-.857l.775-.55c.211.298.398.611.564.937zm.803 2.15a8 8 0 0 0-.421-1.017l.848-.484q.198.398.36.815zM16 8a7 7 0 0 0-.02-.539l.998-.09q.02.32.022.629zm-4.783 6.703q.238-.176.463-.373l.648.752q-.148.129-.31.264zm2.15-2.023a7 7 0 0 0 .53-.752l.925.427q-.238.418-.53.815zm.926-2.008a7 7 0 0 0 .291-.9l.977.244a8 8 0 0 1-.348 1.07zm.312-1.023a7 7 0 0 0 .096-.943h1a8 8 0 0 1-.115 1.135z" />
+                                                <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z" />
+                                                <path
+                                                    d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5" />
+                                            </svg>
+                                        </a>
                                         <button type="button" @click="edit({{ json_encode($productData) }})"
                                             class="text-blue-600 hover:underline">
+
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path

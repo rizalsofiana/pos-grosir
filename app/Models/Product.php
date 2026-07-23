@@ -33,4 +33,22 @@ class Product extends Model
     {
         return $this->hasMany(SaleDetail::class);
     }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function priceHistories()
+    {
+        return $this->hasMany(PriceHistory::class);
+    }
+
+    public function discountRules()
+    {
+        return $this->hasMany(DiscountRule::class);
+    }
 }
+
+
+
