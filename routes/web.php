@@ -8,7 +8,9 @@ use App\Http\Controllers\MasterDataController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StockController;
+
 
 
 use Illuminate\Support\Facades\Route;
@@ -74,7 +76,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
         Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+        Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 });
+
 
 

@@ -50,9 +50,16 @@
 
 <body onload="window.print()">
     <div class="center">
-        <strong>POS GROSIR</strong><br>
+        <strong>{{ \App\Models\Setting::getValue('store_name', 'POS GROSIR') }}</strong><br>
+        @if ($address = \App\Models\Setting::getValue('store_address'))
+            {{ $address }}<br>
+        @endif
+        @if ($phone = \App\Models\Setting::getValue('store_phone'))
+            {{ $phone }}<br>
+        @endif
         Struk Penjualan
     </div>
+
     <div class="line"></div>
     <div>
         No: {{ $sale->invoice_number }}<br>
@@ -92,7 +99,8 @@
         </tr>
     </table>
     <div class="line"></div>
-    <div class="center">Terima kasih atas kunjungan Anda</div>
+    <div class="center">{{ \App\Models\Setting::getValue('receipt_footer', 'Terima kasih atas kunjungan Anda') }}</div>
+
 
     <div class="no-print center" style="margin-top: 12px;">
         <button onclick="window.print()">Cetak Ulang</button>

@@ -38,7 +38,10 @@
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('discounts*') ? 'bg-slate-800' : '' }}">Diskon</a>
                 <a href="{{ route('reports.sales') }}"
                     class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('reports*') ? 'bg-slate-800' : '' }}">Laporan</a>
+                <a href="{{ route('settings') }}"
+                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('settings*') ? 'bg-slate-800' : '' }}">Pengaturan</a>
             </nav>
+
 
 
 
