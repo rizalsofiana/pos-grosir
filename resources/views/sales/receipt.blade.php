@@ -97,7 +97,14 @@
             <td>Bayar</td>
             <td class="right capitalize">{{ $sale->payment_method }}</td>
         </tr>
+        @if ($sale->payment_method === 'cashless')
+            <tr>
+                <td>Status</td>
+                <td class="right capitalize">{{ $sale->payment_status }}</td>
+            </tr>
+        @endif
     </table>
+
     <div class="line"></div>
     <div class="center">{{ \App\Models\Setting::getValue('receipt_footer', 'Terima kasih atas kunjungan Anda') }}</div>
 

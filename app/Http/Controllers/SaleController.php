@@ -8,10 +8,12 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\StockMovement;
+use App\Services\MidtransService;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class SaleController extends Controller
@@ -23,6 +25,8 @@ class SaleController extends Controller
             'customers' => Customer::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
             'discountRules' => DiscountRule::active()->get(),
+            'midtransClientKey' => config('midtrans.client_key'),
+            'midtransIsProduction' => config('midtrans.is_production'),
         ]);
     }
 
@@ -38,7 +42,7 @@ class SaleController extends Controller
             'items.*.price' => ['required', 'numeric', 'min:0'],
         ]);
 
-        DB::transaction(function () use ($data) {
+        $sale = DB::transaction(function () use ($data) {
             $products = Product::whereIn('id', collect($data['items'])->pluck('product_id'))
                 ->get()
                 ->keyBy('id');
@@ -78,9 +82,11 @@ class SaleController extends Controller
             $discount = $lineDiscounts->sum();
             $grandAmount = $subTotal - $discount;
 
+            $invoiceNumber = $this->generateInvoiceNumber();
+            $isCashless = $data['payment_method'] === 'cashless';
 
             $sale = Sale::create([
-                'invoice_number' => $this->generateInvoiceNumber(),
+                'invoice_number' => $invoiceNumber,
                 'customer_id' => $data['customer_id'],
                 'user_id' => Auth::id(),
                 'sale_date' => $data['sale_date'],
@@ -88,6 +94,8 @@ class SaleController extends Controller
                 'discount' => $discount,
                 'grand_amount' => $grandAmount,
                 'payment_method' => $data['payment_method'],
+                'payment_status' => $isCashless ? 'pending' : 'paid',
+                'midtrans_order_id' => $isCashless ? $invoiceNumber . '-' . time() : null,
             ]);
 
             foreach ($data['items'] as $index => $item) {
@@ -102,7 +110,6 @@ class SaleController extends Controller
                     'discount' => $lineDiscount,
                     'sub_total' => $lineSubTotal,
                 ]);
-
 
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $stockBefore = $product->stock;
@@ -121,9 +128,54 @@ class SaleController extends Controller
             }
 
             session(['last_sale_id' => $sale->id]);
+
+            return $sale;
         });
 
+        if ($sale->payment_method === 'cashless') {
+            $sale->load(['customer', 'saleDetails.product']);
+            $snapToken = (new MidtransService())->createSnapToken($sale);
+            $sale->update(['snap_token' => $snapToken]);
+
+            if ($request->wantsJson()) {
+                return response()->json(['snap_token' => $snapToken, 'sale_id' => $sale->id]);
+            }
+
+            return redirect()->route('sales')->with('success', 'Transaksi disimpan, silakan selesaikan pembayaran.');
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['redirect' => route('sales')]);
+        }
+
         return redirect()->route('sales')->with('success', 'Transaksi penjualan berhasil disimpan.');
+    }
+
+
+    public function midtransNotification(Request $request)
+    {
+        $notification = (new MidtransService())->handleNotification();
+
+        $sale = Sale::where('midtrans_order_id', $notification->order_id)->first();
+
+        if (!$sale) {
+            Log::warning('Midtrans notification: sale not found', ['order_id' => $notification->order_id]);
+            return response()->json(['message' => 'Sale not found'], 404);
+        }
+
+        $paymentStatus = (new MidtransService())->mapTransactionStatusToPaymentStatus(
+            $notification->transaction_status,
+            $notification->fraud_status ?? null
+        );
+
+        $sale->update(['payment_status' => $paymentStatus]);
+
+        return response()->json(['message' => 'OK']);
+    }
+
+    public function checkStatus(Sale $sale)
+    {
+        return response()->json(['payment_status' => $sale->payment_status]);
     }
 
     public function receipt(Sale $sale)

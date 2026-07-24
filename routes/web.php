@@ -24,6 +24,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
+Route::post('/midtrans/notification', [SaleController::class, 'midtransNotification'])->name('midtrans.notification');
+
+
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -36,6 +39,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/sales', [SaleController::class, 'index'])->name('sales');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
+        Route::get('/sales/{sale}/status', [SaleController::class, 'checkStatus'])->name('sales.status');
+
 
         Route::get('/stock', [StockController::class, 'index'])->name('stock');
         Route::get('/stock/{product}/history', [StockController::class, 'history'])->name('stock.history');

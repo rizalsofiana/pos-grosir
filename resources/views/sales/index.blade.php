@@ -280,11 +280,49 @@
                 },
 
                 onSubmit(event) {
-                    if (this.items.length === 0) {
-                        event.preventDefault();
-                    }
+                    event.preventDefault();
+                    if (this.items.length === 0) return;
+
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    const isCashless = formData.get('payment_method') === 'cashless';
+
+                    fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                            },
+                            body: formData,
+                        })
+                        .then(async (res) => {
+                            if (!res.ok) {
+                                const err = await res.json().catch(() => null);
+                                throw new Error(err?.message || 'Transaksi gagal diproses.');
+                            }
+                            return res.json();
+                        })
+                        .then((data) => {
+                            if (isCashless && data.snap_token) {
+                                window.snap.pay(data.snap_token, {
+                                    onSuccess: () => window.location.href = "{{ route('sales') }}",
+                                    onPending: () => window.location.href = "{{ route('sales') }}",
+                                    onError: () => alert('Pembayaran gagal, silakan coba lagi.'),
+                                    onClose: () => window.location.href = "{{ route('sales') }}",
+                                });
+                            } else {
+                                window.location.href = data.redirect || "{{ route('sales') }}";
+                            }
+                        })
+                        .catch((err) => alert(err.message));
                 },
             };
         }
     </script>
+
+    @push('scripts')
+        <script src="{{ $midtransIsProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}"
+            data-client-key="{{ $midtransClientKey }}"></script>
+    @endpush
 @endsection
+
+
