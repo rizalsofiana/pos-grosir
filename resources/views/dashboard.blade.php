@@ -1,6 +1,5 @@
 @extends(auth()->user()->isAdmin() ? 'layouts.admin' : 'layouts.kasir')
 
-
 @section('title', 'Dashboard POS')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Ringkasan data POS Grosir')
@@ -56,7 +55,9 @@
                 options: {
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             callbacks: {
                                 label: (ctx) => 'Rp ' + ctx.parsed.y.toLocaleString('id-ID')
@@ -69,17 +70,20 @@
                             ticks: {
                                 callback: (value) => 'Rp ' + Number(value).toLocaleString('id-ID')
                             },
-                            grid: { color: '#e2e8f0' }
+                            grid: {
+                                color: '#e2e8f0'
+                            }
                         },
                         x: {
-                            grid: { display: false }
+                            grid: {
+                                display: false
+                            }
                         }
                     }
                 }
             });
         </script>
     @else
-
         <div class="grid gap-4 md:grid-cols-2">
             <a href="{{ route('sales') }}" class="rounded-xl bg-white p-4 shadow">
                 <p class="text-sm text-slate-500">Transaksi Penjualan</p>
@@ -92,5 +96,3 @@
         </div>
     @endif
 @endsection
-
-
