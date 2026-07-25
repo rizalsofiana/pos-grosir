@@ -28,8 +28,7 @@
                     <h2 class="font-semibold text-slate-800">Riwayat Pembelian</h2>
                     <p class="text-xs text-slate-400">{{ $purchases->count() }} transaksi tercatat</p>
                 </div>
-                <span
-                    class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 3h2l1 5m0 0h13l-1.5 8h-11L6 8z" />
@@ -39,7 +38,7 @@
                 </span>
             </div>
 
-            <div class="max-h-[640px] overflow-y-auto">
+            <div class="max-h-160 overflow-y-auto">
                 <table class="min-w-full text-sm">
                     <thead class="sticky top-0 bg-slate-50/90 backdrop-blur">
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -54,9 +53,11 @@
                             <tr class="transition-colors hover:bg-slate-50">
                                 <td class="px-5 py-3 text-slate-600">
                                     {{ $purchase->purchase_date->format('d/m/Y') }}
-                                    <span class="block text-xs text-slate-400">{{ $purchase->purchase_date->format('H:i') }}</span>
+                                    <span
+                                        class="block text-xs text-slate-400">{{ $purchase->purchase_date->format('H:i') }}</span>
                                 </td>
-                                <td class="px-5 py-3 font-medium text-slate-700">{{ $purchase->supplier?->name ?? '-' }}</td>
+                                <td class="px-5 py-3 font-medium text-slate-700">{{ $purchase->supplier?->name ?? '-' }}
+                                </td>
                                 <td class="px-5 py-3 text-slate-500">{{ $purchase->user?->name ?? '-' }}</td>
                                 <td class="px-5 py-3 text-right font-semibold text-slate-800">
                                     Rp {{ number_format($purchase->total_amount, 0, ',', '.') }}
@@ -84,7 +85,8 @@
         </div>
 
         {{-- Form Tambah Pembelian --}}
-        <div class="h-fit rounded-2xl border border-slate-200 bg-white shadow-sm" x-data="purchaseForm()" x-init="init()">
+        <div class="h-fit rounded-2xl border border-slate-200 bg-white shadow-sm" x-data="purchaseForm()"
+            x-init="init()">
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <h2 class="font-semibold text-slate-800">Tambah Pembelian</h2>
                 <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-600">
@@ -168,7 +170,8 @@
 
                 <div class="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
                     <span class="text-sm font-medium text-slate-600">Total</span>
-                    <span class="text-lg font-semibold text-slate-800" x-text="'Rp ' + total.toLocaleString('id-ID')"></span>
+                    <span class="text-lg font-semibold text-slate-800"
+                        x-text="'Rp ' + total.toLocaleString('id-ID')"></span>
                 </div>
 
                 <button type="submit" :disabled="items.length === 0"
