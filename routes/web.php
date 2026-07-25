@@ -38,8 +38,10 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/sales', [SaleController::class, 'index'])->name('sales');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+        Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
         Route::get('/sales/{sale}/status', [SaleController::class, 'checkStatus'])->name('sales.status');
+
 
 
         Route::get('/stock', [StockController::class, 'index'])->name('stock');
@@ -86,6 +88,3 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     });
 });
-
-
-

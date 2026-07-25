@@ -21,7 +21,10 @@ class SaleController extends Controller
     public function index()
     {
         return view('sales.index', [
-            'sales' => Sale::with(['customer', 'user'])->latest('sale_date')->get(),
+            'sales' => Sale::with(['customer', 'user'])
+                ->whereDate('sale_date', now()->toDateString())
+                ->latest('sale_date')
+                ->get(),
             'customers' => Customer::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
             'discountRules' => DiscountRule::active()->get(),
@@ -29,6 +32,33 @@ class SaleController extends Controller
             'midtransIsProduction' => config('midtrans.is_production'),
         ]);
     }
+
+    public function history(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+        $perPage = (int) $request->input('per_page', 10);
+        $perPage = in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
+
+        $salesQuery = Sale::with(['customer', 'user'])
+            ->whereDate('sale_date', '>=', $startDate)
+            ->whereDate('sale_date', '<=', $endDate);
+
+        if ($search = $request->input('search')) {
+            $salesQuery->where('invoice_number', 'like', "%{$search}%");
+        }
+
+        $sales = $salesQuery->orderByDesc('sale_date')->paginate($perPage)->withQueryString();
+
+        return view('sales.history', [
+            'sales' => $sales,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'perPage' => $perPage,
+            'search' => $request->input('search', ''),
+        ]);
+    }
+
 
     public function store(Request $request)
     {

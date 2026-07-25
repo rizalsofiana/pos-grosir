@@ -170,10 +170,13 @@
                 class="flex max-h-[85vh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-xl">
                 <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4">
                     <div>
-                        <h2 class="font-semibold text-slate-800">Riwayat Penjualan</h2>
+                        <h2 class="font-semibold text-slate-800">Riwayat Penjualan Hari Ini</h2>
                         <p class="text-xs text-slate-400">{{ $sales->count() }} transaksi tercatat</p>
                     </div>
+                    <a href="{{ route('sales.history') }}"
+                        class="mr-3 text-xs font-medium text-blue-600 hover:underline">Lihat riwayat lengkap</a>
                     <button type="button" @click="showHistory = false"
+
                         class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
