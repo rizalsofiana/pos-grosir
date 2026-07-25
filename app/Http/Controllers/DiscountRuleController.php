@@ -9,14 +9,21 @@ use Illuminate\Http\Request;
 
 class DiscountRuleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('discount-rules.index', [
-            'rules' => DiscountRule::with(['product', 'category'])->latest()->get(),
+            'rules' => DiscountRule::with(['product', 'category'])->latest()->paginate($perPage)->withQueryString(),
             'products' => Product::active()->orderBy('name')->get(),
             'categories' => Category::active()->orderBy('name')->get(),
+            'perPage' => $perPage,
         ]);
     }
+
 
     public function store(Request $request)
     {

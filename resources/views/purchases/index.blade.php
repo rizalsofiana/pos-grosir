@@ -26,17 +26,31 @@
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <div>
                     <h2 class="font-semibold text-slate-800">Riwayat Pembelian</h2>
-                    <p class="text-xs text-slate-400">{{ $purchases->count() }} transaksi tercatat</p>
+                    <p class="text-xs text-slate-400">{{ $purchases->total() }} transaksi tercatat</p>
                 </div>
-                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 3h2l1 5m0 0h13l-1.5 8h-11L6 8z" />
-                        <circle cx="9.5" cy="19.5" r="1.4" />
-                        <circle cx="17" cy="19.5" r="1.4" />
-                    </svg>
-                </span>
+                <div class="flex items-center gap-3">
+                    <form method="GET" action="{{ route('purchases') }}"
+                        class="flex items-center gap-2 text-sm text-slate-500">
+                        <label for="per_page">Tampilkan</label>
+                        <select id="per_page" name="per_page" onchange="this.form.submit()"
+                            class="rounded-lg border border-slate-200 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
+                            @foreach ([10, 25, 50, 100] as $option)
+                                <option value="{{ $option }}" {{ $perPage == $option ? 'selected' : '' }}>
+                                    {{ $option }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3h2l1 5m0 0h13l-1.5 8h-11L6 8z" />
+                            <circle cx="9.5" cy="19.5" r="1.4" />
+                            <circle cx="17" cy="19.5" r="1.4" />
+                        </svg>
+                    </span>
+                </div>
             </div>
+
 
             <div class="max-h-160 overflow-y-auto">
                 <table class="min-w-full text-sm">
@@ -82,9 +96,19 @@
                     </tbody>
                 </table>
             </div>
+            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
+                <span>
+                    Menampilkan {{ $purchases->firstItem() ?? 0 }}-{{ $purchases->lastItem() ?? 0 }}
+                    dari {{ $purchases->total() }} data
+                </span>
+                <div>
+                    {{ $purchases->onEachSide(1)->links() }}
+                </div>
+            </div>
         </div>
 
         {{-- Form Tambah Pembelian --}}
+
         <div class="h-fit rounded-2xl border border-slate-200 bg-white shadow-sm" x-data="purchaseForm()"
             x-init="init()">
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">

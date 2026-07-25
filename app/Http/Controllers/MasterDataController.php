@@ -13,34 +13,61 @@ use Illuminate\Support\Facades\Auth;
 
 class MasterDataController extends Controller
 {
-    public function products()
+    public function products(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('master-data.products', [
-            'products' => Product::with('category')->latest()->get(),
+            'products' => Product::with('category')->latest()->paginate($perPage)->withQueryString(),
             'categories' => Category::orderBy('name')->get(),
+            'perPage' => $perPage,
         ]);
     }
 
-    public function categories()
+
+    public function categories(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('master-data.categories', [
-            'categories' => Category::latest()->get(),
+            'categories' => Category::latest()->paginate($perPage)->withQueryString(),
+            'perPage' => $perPage,
         ]);
     }
 
-    public function suppliers()
+    public function suppliers(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('master-data.suppliers', [
-            'suppliers' => Supplier::latest()->get(),
+            'suppliers' => Supplier::latest()->paginate($perPage)->withQueryString(),
+            'perPage' => $perPage,
         ]);
     }
 
-    public function customers()
+
+    public function customers(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('master-data.customers', [
-            'customers' => Customer::latest()->get(),
+            'customers' => Customer::latest()->paginate($perPage)->withQueryString(),
+            'perPage' => $perPage,
         ]);
     }
+
 
     public function storeCategory(Request $request)
     {

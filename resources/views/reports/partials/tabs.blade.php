@@ -1,14 +1,14 @@
-<div class="mb-6 flex gap-2 border-b border-slate-200">
+<div class="mb-6 inline-flex gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
     <a href="{{ route('reports.sales') }}"
-        class="border-b-2 px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.sales') ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        class="rounded-lg px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.sales') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
         Penjualan
     </a>
     <a href="{{ route('reports.purchases') }}"
-        class="border-b-2 px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.purchases') ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        class="rounded-lg px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.purchases') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
         Pembelian
     </a>
     <a href="{{ route('reports.stock') }}"
-        class="border-b-2 px-4 py-2 text-sm font-medium {{ request()->routeIs('reports.stock') ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        class="rounded-lg px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.stock') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
         Stok
     </a>
 </div>

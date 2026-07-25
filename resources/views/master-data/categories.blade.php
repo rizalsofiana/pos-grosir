@@ -11,8 +11,21 @@
 
     <div class="grid gap-6 lg:grid-cols-[1fr_0.8fr]" x-data="categoryPage()">
         <div class="rounded-xl bg-white p-4 shadow">
-            <h2 class="mb-4 font-semibold">Daftar Kategori</h2>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="font-semibold">Daftar Kategori</h2>
+                <form method="GET" action="{{ route('categories') }}" class="flex items-center gap-2 text-sm text-slate-500">
+                    <label for="per_page">Tampilkan</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()"
+                        class="rounded border border-slate-200 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
+                        @foreach ([10, 25, 50, 100] as $option)
+                            <option value="{{ $option }}" {{ $perPage == $option ? 'selected' : '' }}>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <span>data</span>
+                </form>
+            </div>
             <ul class="space-y-2">
+
                 @foreach ($categories as $category)
                     <li
                         class="flex items-center justify-between rounded border px-3 py-2 {{ !$category->is_active ? 'opacity-50' : '' }}">
@@ -59,9 +72,19 @@
                     </li>
                 @endforeach
             </ul>
+            <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                <span>
+                    Menampilkan {{ $categories->firstItem() ?? 0 }}-{{ $categories->lastItem() ?? 0 }}
+                    dari {{ $categories->total() }} data
+                </span>
+                <div>
+                    {{ $categories->onEachSide(1)->links() }}
+                </div>
+            </div>
         </div>
         <div class="rounded-xl bg-white p-4 shadow">
             <h2 class="mb-4 font-semibold" x-text="mode === 'edit' ? 'Edit Kategori' : 'Tambah Kategori'"></h2>
+
             <form method="POST"
                 :action="mode === 'edit' ? '{{ url('categories') }}/' + form.id : '{{ route('categories.store') }}'"
                 class="space-y-3">

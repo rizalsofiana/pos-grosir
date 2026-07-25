@@ -10,12 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('stock.index', [
-            'products' => Product::with('category')->orderBy('name')->get(),
+            'products' => Product::with('category')->orderBy('name')->paginate($perPage)->withQueryString(),
+            'allProducts' => Product::orderBy('name')->get(),
+            'perPage' => $perPage,
         ]);
     }
+
 
     public function history(Product $product)
     {

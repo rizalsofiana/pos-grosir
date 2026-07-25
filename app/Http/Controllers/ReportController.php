@@ -10,16 +10,24 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
+    private function perPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 10);
+
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 10;
+    }
+
     public function sales(Request $request)
     {
         $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
+        $perPage = $this->perPage($request);
 
-        $sales = Sale::with('customer')
+        $salesQuery = Sale::with('customer')
             ->whereDate('sale_date', '>=', $startDate)
-            ->whereDate('sale_date', '<=', $endDate)
-            ->orderByDesc('sale_date')
-            ->get();
+            ->whereDate('sale_date', '<=', $endDate);
+
+        $allSales = (clone $salesQuery)->get();
 
         $saleDetails = SaleDetail::with('product')
             ->whereHas('sale', function ($query) use ($startDate, $endDate) {
@@ -28,15 +36,17 @@ class ReportController extends Controller
             })
             ->get();
 
-        $totalOmzet = $sales->sum('grand_amount');
-        $totalDiscount = $sales->sum('discount');
-        $totalTransactions = $sales->count();
+        $totalOmzet = $allSales->sum('grand_amount');
+        $totalDiscount = $allSales->sum('discount');
+        $totalTransactions = $allSales->count();
 
         $hpp = $saleDetails->sum(function ($detail) {
             return $detail->quantity * ($detail->product->purchase_price ?? 0);
         });
 
         $grossProfit = $totalOmzet - $hpp;
+
+        $sales = $salesQuery->orderByDesc('sale_date')->paginate($perPage)->withQueryString();
 
         return view('reports.sales', [
             'sales' => $sales,
@@ -47,6 +57,7 @@ class ReportController extends Controller
             'totalTransactions' => $totalTransactions,
             'hpp' => $hpp,
             'grossProfit' => $grossProfit,
+            'perPage' => $perPage,
         ]);
     }
 
@@ -54,35 +65,43 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
+        $perPage = $this->perPage($request);
 
-        $purchases = Purchase::with('supplier')
+        $purchasesQuery = Purchase::with('supplier')
             ->whereDate('purchase_date', '>=', $startDate)
-            ->whereDate('purchase_date', '<=', $endDate)
-            ->orderByDesc('purchase_date')
-            ->get();
+            ->whereDate('purchase_date', '<=', $endDate);
+
+        $allPurchases = (clone $purchasesQuery)->get();
+
+        $purchases = $purchasesQuery->orderByDesc('purchase_date')->paginate($perPage)->withQueryString();
 
         return view('reports.purchases', [
             'purchases' => $purchases,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'totalPembelian' => $purchases->sum('total_amount'),
-            'totalTransactions' => $purchases->count(),
+            'totalPembelian' => $allPurchases->sum('total_amount'),
+            'totalTransactions' => $allPurchases->count(),
+            'perPage' => $perPage,
         ]);
     }
 
     public function stock(Request $request)
     {
-        $products = Product::with('category')
-            ->orderBy('name')
-            ->get();
+        $perPage = $this->perPage($request);
 
-        $totalStockValue = $products->sum(function ($product) {
+        $allProducts = Product::orderBy('name')->get();
+
+        $totalStockValue = $allProducts->sum(function ($product) {
             return $product->stock * $product->purchase_price;
         });
+
+        $products = Product::with('category')->orderBy('name')->paginate($perPage)->withQueryString();
 
         return view('reports.stock', [
             'products' => $products,
             'totalStockValue' => $totalStockValue,
+            'totalProducts' => $allProducts->count(),
+            'perPage' => $perPage,
         ]);
     }
 }

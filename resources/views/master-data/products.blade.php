@@ -11,8 +11,21 @@
 
     <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]" x-data="productPage()">
         <div class="rounded-xl bg-white p-4 shadow">
-            <h2 class="mb-4 font-semibold">Daftar Produk</h2>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="font-semibold">Daftar Produk</h2>
+                <form method="GET" action="{{ route('products') }}" class="flex items-center gap-2 text-sm text-slate-500">
+                    <label for="per_page">Tampilkan</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()"
+                        class="rounded border border-slate-200 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
+                        @foreach ([10, 25, 50, 100] as $option)
+                            <option value="{{ $option }}" {{ $perPage == $option ? 'selected' : '' }}>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <span>data</span>
+                </form>
+            </div>
             <div class="overflow-x-auto">
+
                 <table class="min-w-full text-sm">
                     <thead>
                         <tr class="border-b text-left">
@@ -108,7 +121,17 @@
                     </tbody>
                 </table>
             </div>
+            <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                <span>
+                    Menampilkan {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
+                    dari {{ $products->total() }} data
+                </span>
+                <div>
+                    {{ $products->onEachSide(1)->links() }}
+                </div>
+            </div>
         </div>
+
 
         <div class="rounded-xl bg-white p-4 shadow">
             <h2 class="mb-4 font-semibold" x-text="mode === 'edit' ? 'Edit Produk' : 'Tambah Produk'"></h2>

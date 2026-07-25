@@ -11,8 +11,21 @@
 
     <div class="grid gap-6 lg:grid-cols-[1fr_0.8fr]" x-data="supplierPage()">
         <div class="rounded-xl bg-white p-4 shadow">
-            <h2 class="mb-4 font-semibold">Daftar Supplier</h2>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="font-semibold">Daftar Supplier</h2>
+                <form method="GET" action="{{ route('suppliers') }}" class="flex items-center gap-2 text-sm text-slate-500">
+                    <label for="per_page">Tampilkan</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()"
+                        class="rounded border border-slate-200 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
+                        @foreach ([10, 25, 50, 100] as $option)
+                            <option value="{{ $option }}" {{ $perPage == $option ? 'selected' : '' }}>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <span>data</span>
+                </form>
+            </div>
             <ul class="space-y-2">
+
                 @foreach ($suppliers as $supplier)
                     <li class="flex items-center justify-between rounded border px-3 py-2 {{ ! $supplier->is_active ? 'opacity-50' : '' }}">
                         <div>
@@ -41,9 +54,19 @@
                     </li>
                 @endforeach
             </ul>
+            <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+                <span>
+                    Menampilkan {{ $suppliers->firstItem() ?? 0 }}-{{ $suppliers->lastItem() ?? 0 }}
+                    dari {{ $suppliers->total() }} data
+                </span>
+                <div>
+                    {{ $suppliers->onEachSide(1)->links() }}
+                </div>
+            </div>
         </div>
         <div class="rounded-xl bg-white p-4 shadow">
             <h2 class="mb-4 font-semibold" x-text="mode === 'edit' ? 'Edit Supplier' : 'Tambah Supplier'"></h2>
+
             <form method="POST" :action="mode === 'edit' ? '{{ url('suppliers') }}/' + form.id : '{{ route('suppliers.store') }}'"
                 class="space-y-3">
                 @csrf

@@ -13,14 +13,21 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = (int) $request->input('per_page', 10);
+        if (! in_array($perPage, [10, 25, 50, 100], true)) {
+            $perPage = 10;
+        }
+
         return view('purchases.index', [
-            'purchases' => Purchase::with(['supplier', 'user'])->latest('purchase_date')->get(),
+            'purchases' => Purchase::with(['supplier', 'user'])->latest('purchase_date')->paginate($perPage)->withQueryString(),
             'suppliers' => Supplier::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
+            'perPage' => $perPage,
         ]);
     }
+
 
     public function store(Request $request)
     {
