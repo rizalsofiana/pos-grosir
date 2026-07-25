@@ -17,20 +17,28 @@
                 <p class="text-sm text-slate-400">Panel Kasir</p>
             </div>
 
-            <nav class="space-y-2">
+            <nav class="space-y-1">
                 <a href="{{ route('dashboard') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('dashboard') ? 'bg-slate-800' : '' }}">Dashboard</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('dashboard') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9" /><path d="M5 10v10h14V10" /><path d="M9 20v-6h6v6" /></svg>
+                    <span>Dashboard</span>
+                </a>
                 <a href="{{ route('purchases') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">Pembelian</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l1 5m0 0h13l-1.5 8h-11L6 8z" /><circle cx="9.5" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
+                    <span>Pembelian</span>
+                </a>
                 <a href="{{ route('sales') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('sales*') ? 'bg-slate-800' : '' }}">Penjualan</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('sales*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M8 6V4h8v2" /><path d="M3 11h18" /></svg>
+                    <span>Penjualan</span>
+                </a>
                 <a href="{{ route('stock') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('stock*') ? 'bg-slate-800' : '' }}">Stok</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('stock*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="1.5" /><path d="M3 8l2.5-4h13L21 8" /><path d="M9 12h6" /></svg>
+                    <span>Stok</span>
+                </a>
             </nav>
-
-
-
-
             <div class="mt-10 rounded-lg border border-slate-700 bg-slate-800 p-4 text-sm">
                 <p class="font-medium">Aktif sebagai</p>
                 <p class="text-slate-400">{{ auth()->user()?->name ?? 'Admin' }}</p>

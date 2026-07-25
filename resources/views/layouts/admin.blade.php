@@ -17,30 +17,64 @@
                 <p class="text-sm text-slate-400">Panel Admin</p>
             </div>
 
-            <nav class="space-y-2">
+            <nav class="space-y-1">
                 <a href="{{ route('dashboard') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('dashboard') ? 'bg-slate-800' : '' }}">Dashboard</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('dashboard') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9" /><path d="M5 10v10h14V10" /><path d="M9 20v-6h6v6" /></svg>
+                    <span>Dashboard</span>
+                </a>
                 <a href="{{ route('products') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('products*') ? 'bg-slate-800' : '' }}">Produk</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('products*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" /></svg>
+                    <span>Produk</span>
+                </a>
                 <a href="{{ route('categories') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('categories*') ? 'bg-slate-800' : '' }}">Kategori</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('categories*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5" /><rect x="13" y="3" width="8" height="8" rx="1.5" /><rect x="3" y="13" width="8" height="8" rx="1.5" /><rect x="13" y="13" width="8" height="8" rx="1.5" /></svg>
+                    <span>Kategori</span>
+                </a>
                 <a href="{{ route('suppliers') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('suppliers*') ? 'bg-slate-800' : '' }}">Supplier</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('suppliers*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21 8H6" /><circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /></svg>
+                    <span>Supplier</span>
+                </a>
                 <a href="{{ route('customers') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('customers*') ? 'bg-slate-800' : '' }}">Customer</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('customers*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" /></svg>
+                    <span>Customer</span>
+                </a>
                 <a href="{{ route('purchases') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">Pembelian</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('purchases*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l1 5m0 0h13l-1.5 8h-11L6 8z" /><circle cx="9.5" cy="19.5" r="1.4" /><circle cx="17" cy="19.5" r="1.4" /></svg>
+                    <span>Pembelian</span>
+                </a>
                 <a href="{{ route('sales') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('sales*') ? 'bg-slate-800' : '' }}">Penjualan</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('sales*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2" /><path d="M8 6V4h8v2" /><path d="M3 11h18" /></svg>
+                    <span>Penjualan</span>
+                </a>
                 <a href="{{ route('stock') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('stock*') ? 'bg-slate-800' : '' }}">Stok</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('stock*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="1.5" /><path d="M3 8l2.5-4h13L21 8" /><path d="M9 12h6" /></svg>
+                    <span>Stok</span>
+                </a>
                 <a href="{{ route('discounts') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('discounts*') ? 'bg-slate-800' : '' }}">Diskon</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('discounts*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12l-8-8H5a1 1 0 0 0-1 1v7l8 8a2 2 0 0 0 2.8 0l5.2-5.2a2 2 0 0 0 0-2.8z" /><circle cx="8.5" cy="8.5" r="1.4" /></svg>
+                    <span>Diskon</span>
+                </a>
                 <a href="{{ route('reports.sales') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('reports*') ? 'bg-slate-800' : '' }}">Laporan</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('reports*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16" /><path d="M8 16v-4" /><path d="M12 16V8" /><path d="M16 16v-7" /></svg>
+                    <span>Laporan</span>
+                </a>
                 <a href="{{ route('settings') }}"
-                    class="block rounded-lg px-4 py-2 hover:bg-slate-800 {{ request()->routeIs('settings*') ? 'bg-slate-800' : '' }}">Pengaturan</a>
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('settings*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.14.6.63 1.04 1.56 1.04H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z" /></svg>
+                    <span>Pengaturan</span>
+                </a>
             </nav>
+
 
 
 
