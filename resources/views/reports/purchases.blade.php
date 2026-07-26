@@ -22,7 +22,11 @@
         <input type="hidden" name="per_page" value="{{ $perPage }}">
         <button type="submit"
             class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Filter</button>
+        <a href="{{ route('reports.purchases.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">Export
+            Excel</a>
     </form>
+
 
     <div class="mb-6 grid gap-4 sm:grid-cols-2">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

@@ -101,8 +101,11 @@ Route::middleware('auth')->group(function () {
         Route::delete('/discounts/{discountRule}', [DiscountRuleController::class, 'destroy'])->name('discounts.destroy');
 
         Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('/reports/sales/export', [ReportController::class, 'exportSales'])->name('reports.sales.export');
         Route::get('/reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
+        Route::get('/reports/purchases/export', [ReportController::class, 'exportPurchases'])->name('reports.purchases.export');
         Route::get('/reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');

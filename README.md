@@ -23,8 +23,9 @@
 - Retur (selesai: retur penjualan & retur pembelian, otomatis restock/stok keluar)
 - Stock Opname (selesai: sesi opname, penyesuaian stok otomatis, pencatatan selisih & stock movement)
 - Hold Transaksi (selesai: transaksi bisa ditunda beserta item yang sudah dimasukkan ke keranjang)
-- Audit Log
-- Import/Export Excel
+- Audit Log (selesai)
+- Import/Export Excel (sebagian: export laporan penjualan & pembelian ke Excel selesai; import produk menyusul)
+
 
 ## V3 — Pengembangan
 - Multi Gudang

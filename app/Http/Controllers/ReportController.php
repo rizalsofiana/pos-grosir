@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PurchasesExport;
+use App\Exports\SalesExport;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class ReportController extends Controller
 {
@@ -85,8 +89,25 @@ class ReportController extends Controller
         ]);
     }
 
+    public function exportSales(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        return Excel::download(new SalesExport($startDate, $endDate), "laporan-penjualan-{$startDate}-{$endDate}.xlsx");
+    }
+
+    public function exportPurchases(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        return Excel::download(new PurchasesExport($startDate, $endDate), "laporan-pembelian-{$startDate}-{$endDate}.xlsx");
+    }
+
     public function stock(Request $request)
     {
+
         $perPage = $this->perPage($request);
 
         $allProducts = Product::orderBy('name')->get();
