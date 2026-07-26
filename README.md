@@ -22,7 +22,7 @@
 ## V2 — Operasional
 - Retur (selesai: retur penjualan & retur pembelian, otomatis restock/stok keluar)
 - Stock Opname (selesai: sesi opname, penyesuaian stok otomatis, pencatatan selisih & stock movement)
-- Hold Transaksi
+- Hold Transaksi (selesai: transaksi bisa ditunda beserta item yang sudah dimasukkan ke keranjang)
 - Audit Log
 - Import/Export Excel
 

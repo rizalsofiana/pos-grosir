@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscountRuleController;
@@ -105,5 +106,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/settings', [SettingController::class, 'index'])->name('settings');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs');
     });
 });

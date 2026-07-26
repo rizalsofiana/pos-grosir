@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 #[Table('settings')]
 class Setting extends Model
 {
+    use Auditable;
+
     public static function getValue(string $key, ?string $default = null): ?string
     {
         return static::where('setting_key', $key)->value('setting_value') ?? $default;
