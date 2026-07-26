@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\DiscountRule;
+use App\Models\HeldSale;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\StockMovement;
 use App\Services\MidtransService;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,16 +23,79 @@ class SaleController extends Controller
     {
         return view('sales.index', [
             'sales' => Sale::with(['customer', 'user'])
-                ->whereDate('sale_date', now()->toDateString())
+                ->whereDate('sale_date', Carbon::now('Asia/Jakarta')->toDateString())
                 ->latest('sale_date')
                 ->get(),
             'customers' => Customer::orderBy('name')->get(),
             'products' => Product::orderBy('name')->get(),
             'discountRules' => DiscountRule::active()->get(),
+            'heldSales' => HeldSale::with('customer')->latest()->get(),
             'midtransClientKey' => config('midtrans.client_key'),
             'midtransIsProduction' => config('midtrans.is_production'),
         ]);
     }
+
+    public function hold(Request $request)
+    {
+        $data = $request->validate([
+            'customer_id' => ['nullable', 'exists:customers,id'],
+            'note' => ['nullable', 'string', 'max:255'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'items.*.price' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $held = HeldSale::create([
+            'code' => 'HOLD-' . now()->format('Ymd-His'),
+            'customer_id' => $data['customer_id'] ?? null,
+            'user_id' => Auth::id(),
+            'items' => $data['items'],
+            'note' => $data['note'] ?? null,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Transaksi ditahan.', 'held_sale' => $held]);
+        }
+
+        return redirect()->route('sales')->with('success', 'Transaksi ditahan.');
+    }
+
+    public function resumeHold(HeldSale $heldSale)
+    {
+        $products = Product::whereIn('id', collect($heldSale->items)->pluck('product_id'))
+            ->get()
+            ->keyBy('id');
+
+        $items = collect($heldSale->items)->map(function ($item) use ($products) {
+            $product = $products->get($item['product_id']);
+
+            return [
+                'product_id' => $item['product_id'],
+                'name' => $product?->name,
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+                'stock' => $product?->stock ?? 0,
+                'category_id' => $product?->category_id,
+            ];
+        })->values();
+
+        $customerId = $heldSale->customer_id;
+        $heldSale->delete();
+
+        return response()->json([
+            'items' => $items,
+            'customer_id' => $customerId,
+        ]);
+    }
+
+    public function destroyHold(HeldSale $heldSale)
+    {
+        $heldSale->delete();
+
+        return redirect()->route('sales')->with('success', 'Transaksi tahan dihapus.');
+    }
+
 
     public function history(Request $request)
     {
@@ -70,7 +134,9 @@ class SaleController extends Controller
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.price' => ['required', 'numeric', 'min:0'],
+            'paid_amount' => ['nullable', 'numeric', 'min:0'],
         ]);
+
 
         $sale = DB::transaction(function () use ($data) {
             $products = Product::whereIn('id', collect($data['items'])->pluck('product_id'))
@@ -115,6 +181,21 @@ class SaleController extends Controller
             $invoiceNumber = $this->generateInvoiceNumber();
             $isCashless = $data['payment_method'] === 'cashless';
 
+            $paidAmount = null;
+            $changeAmount = null;
+
+            if (!$isCashless) {
+                $paidAmount = $data['paid_amount'] ?? $grandAmount;
+
+                if ($paidAmount < $grandAmount) {
+                    throw ValidationException::withMessages([
+                        'paid_amount' => 'Jumlah bayar kurang dari total belanja.',
+                    ]);
+                }
+
+                $changeAmount = $paidAmount - $grandAmount;
+            }
+
             $sale = Sale::create([
                 'invoice_number' => $invoiceNumber,
                 'customer_id' => $data['customer_id'],
@@ -123,10 +204,13 @@ class SaleController extends Controller
                 'sub_total' => $subTotal,
                 'discount' => $discount,
                 'grand_amount' => $grandAmount,
+                'paid_amount' => $paidAmount,
+                'change_amount' => $changeAmount,
                 'payment_method' => $data['payment_method'],
                 'payment_status' => $isCashless ? 'pending' : 'paid',
                 'midtrans_order_id' => $isCashless ? $invoiceNumber . '-' . time() : null,
             ]);
+
 
             foreach ($data['items'] as $index => $item) {
                 $lineDiscount = $lineDiscounts[$index];

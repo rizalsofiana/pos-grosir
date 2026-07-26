@@ -20,14 +20,12 @@
 - Laporan Dasar
 - Pengaturan
 ## V2 — Operasional
-- Retur
-- Stock Opname
+- Retur (selesai: retur penjualan & retur pembelian, otomatis restock/stok keluar)
+- Stock Opname (selesai: sesi opname, penyesuaian stok otomatis, pencatatan selisih & stock movement)
+- Hold Transaksi
 - Audit Log
 - Import/Export Excel
-- Riwayat Harga
-- Hold Transaksi
-- Notifikasi
-- Backup Database
+
 ## V3 — Pengembangan
 - Multi Gudang
 - Multi Cabang

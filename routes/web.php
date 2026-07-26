@@ -6,10 +6,13 @@ use App\Http\Controllers\DiscountRuleController;
 use App\Http\Controllers\MasterDataController;
 
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleReturnController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockOpnameController;
 
 
 
@@ -36,11 +39,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases');
         Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
 
+        Route::get('/purchase-returns', [PurchaseReturnController::class, 'index'])->name('purchase-returns');
+        Route::post('/purchase-returns', [PurchaseReturnController::class, 'store'])->name('purchase-returns.store');
+
         Route::get('/sales', [SaleController::class, 'index'])->name('sales');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
         Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');
         Route::get('/sales/{sale}/status', [SaleController::class, 'checkStatus'])->name('sales.status');
+
+        Route::post('/sales/hold', [SaleController::class, 'hold'])->name('sales.hold');
+        Route::post('/sales/hold/{heldSale}/resume', [SaleController::class, 'resumeHold'])->name('sales.hold.resume');
+        Route::delete('/sales/hold/{heldSale}', [SaleController::class, 'destroyHold'])->name('sales.hold.destroy');
+
+
+        Route::get('/sale-returns', [SaleReturnController::class, 'index'])->name('sale-returns');
+        Route::post('/sale-returns', [SaleReturnController::class, 'store'])->name('sale-returns.store');
+        Route::post('/sale-returns/find-sale', [SaleReturnController::class, 'findSale'])->name('sale-returns.find-sale');
 
 
 
@@ -50,6 +65,10 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
         Route::post('/stock/adjust', [StockController::class, 'adjust'])->name('stock.adjust');
+
+        Route::get('/stock-opnames', [StockOpnameController::class, 'index'])->name('stock-opnames');
+        Route::post('/stock-opnames', [StockOpnameController::class, 'store'])->name('stock-opnames.store');
+        Route::get('/stock-opnames/{stockOpname}', [StockOpnameController::class, 'show'])->name('stock-opnames.show');
 
         Route::get('/products', [MasterDataController::class, 'products'])->name('products');
 

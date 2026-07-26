@@ -30,7 +30,7 @@ class DashboardController extends Controller
 
     private function salesChartData(): array
     {
-        $days = collect(range(6, 0))->map(fn ($i) => Carbon::today()->subDays($i));
+        $days = collect(range(6, 0))->map(fn($i) => Carbon::today('Asia/Jakarta')->subDays($i));
 
         $sales = Sale::selectRaw('DATE(sale_date) as date, SUM(grand_amount) as total')
             ->where('payment_status', 'paid')
@@ -39,10 +39,8 @@ class DashboardController extends Controller
             ->pluck('total', 'date');
 
         return [
-            'labels' => $days->map(fn ($d) => $d->translatedFormat('d M'))->values()->all(),
-            'values' => $days->map(fn ($d) => (float) ($sales[$d->toDateString()] ?? 0))->values()->all(),
+            'labels' => $days->map(fn($d) => $d->translatedFormat('d M'))->values()->all(),
+            'values' => $days->map(fn($d) => (float) ($sales[$d->toDateString()] ?? 0))->values()->all(),
         ];
     }
 }
-
-

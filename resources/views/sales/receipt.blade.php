@@ -102,7 +102,17 @@
                 <td>Status</td>
                 <td class="right capitalize">{{ $sale->payment_status }}</td>
             </tr>
+        @else
+            <tr>
+                <td>Tunai</td>
+                <td class="right">{{ number_format($sale->paid_amount, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>Kembalian</td>
+                <td class="right">{{ number_format($sale->change_amount, 0, ',', '.') }}</td>
+            </tr>
         @endif
+
     </table>
 
     <div class="line"></div>

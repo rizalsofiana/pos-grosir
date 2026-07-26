@@ -20,6 +20,20 @@
                     <input type="text" x-model="search" placeholder="Cari produk / SKU..."
                         class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100">
                 </div>
+                <button type="button" @click="showHeld = true"
+                    class="relative flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                    Ditahan
+                    <template x-if="heldSales.length > 0">
+                        <span
+                            class="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-semibold text-white"
+                            x-text="heldSales.length"></span>
+                    </template>
+                </button>
                 <button type="button" @click="showHistory = true"
                     class="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 transition hover:bg-slate-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
@@ -31,6 +45,7 @@
                     Riwayat
                 </button>
             </div>
+
 
             <div class="min-h-0 flex-1 overflow-y-auto p-4">
                 <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
@@ -70,24 +85,36 @@
                 <div class="shrink-0 space-y-3 border-b border-slate-200 p-4">
                     <div>
                         <label class="mb-1 block text-xs font-medium text-slate-500">Customer (opsional)</label>
-                        <select name="customer_id"
+                        <select name="customer_id" x-model="customerId"
                             class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                             <option value="">Umum / Tanpa data</option>
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                             @endforeach
                         </select>
+
                     </div>
                     <div>
                         <label class="mb-1 block text-xs font-medium text-slate-500">Metode Pembayaran</label>
-                        <select name="payment_method"
+                        <select name="payment_method" x-model="paymentMethod"
                             class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                             required>
                             <option value="cash">Cash</option>
                             <option value="cashless">Cashless (Midtrans)</option>
                         </select>
                     </div>
+                    <div x-show="paymentMethod === 'cash'">
+                        <label class="mb-1 block text-xs font-medium text-slate-500">Jumlah Bayar</label>
+                        <input type="number" name="paid_amount" x-model.number="paidAmount" min="0" placeholder="0"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                        <div class="mt-1 flex justify-between text-xs"
+                            :class="changeAmount < 0 ? 'text-red-500' : 'text-slate-500'">
+                            <span>Kembalian</span>
+                            <span x-text="'Rp ' + Math.max(changeAmount, 0).toLocaleString('id-ID')"></span>
+                        </div>
+                    </div>
                 </div>
+
 
                 <div class="min-h-0 flex-1 overflow-y-auto p-4">
                     <template x-if="items.length === 0">
@@ -160,15 +187,27 @@
                         <span x-text="'Rp ' + grandTotal.toLocaleString('id-ID')"></span>
                     </div>
 
-                    <button type="submit" :disabled="items.length === 0"
-                        class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="1" y="4" width="22" height="16" rx="2" />
-                            <path d="M1 10h22" />
-                        </svg>
-                        Proses Pembayaran
-                    </button>
+                    <div class="flex gap-2">
+                        <button type="button" @click="holdCart" :disabled="items.length === 0"
+                            class="flex items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-3 text-sm font-semibold text-amber-600 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="6" y="4" width="4" height="16" />
+                                <rect x="14" y="4" width="4" height="16" />
+                            </svg>
+                            Tahan
+                        </button>
+                        <button type="submit" :disabled="items.length === 0"
+                            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2" />
+                                <path d="M1 10h22" />
+                            </svg>
+                            Proses Pembayaran
+                        </button>
+                    </div>
+
                 </div>
             </form>
         </section>
@@ -249,10 +288,57 @@
                 </div>
             </div>
         </div>
+
+        {{-- Held sales modal --}}
+        <div x-show="showHeld" x-cloak x-transition.opacity
+            class="fixed inset-0 z-20 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+            <div @click.outside="showHeld = false" x-show="showHeld" x-transition
+                class="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-xl">
+                <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-5 py-4">
+                    <div>
+                        <h2 class="font-semibold text-slate-800">Transaksi Ditahan</h2>
+                        <p class="text-xs text-slate-400">Lanjutkan transaksi yang sebelumnya ditahan</p>
+                    </div>
+                    <button type="button" @click="showHeld = false"
+                        class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="overflow-y-auto p-4">
+                    <template x-if="heldSales.length === 0">
+                        <p class="py-10 text-center text-sm text-slate-400">Belum ada transaksi yang ditahan.</p>
+                    </template>
+                    <div class="space-y-2">
+                        <template x-for="held in heldSales" :key="held.id">
+                            <div class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-800" x-text="held.code"></p>
+                                    <p class="text-xs text-slate-400">
+                                        <span x-text="held.customer_name || 'Umum'"></span>
+                                        &middot;
+                                        <span x-text="held.item_count + ' item'"></span>
+                                    </p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="button" @click="resumeHold(held)"
+                                        class="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-100">Lanjutkan</button>
+                                    <button type="button" @click="deleteHold(held)"
+                                        class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-500 transition hover:bg-red-100">Hapus</button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
     <?php
+    
     $mappedProducts = $products
         ->map(
             fn($p) => [
@@ -278,6 +364,17 @@
             ],
         )
         ->values();
+    
+    $heldSales = $heldSales
+        ->map(
+            fn($h) => [
+                'id' => $h->id,
+                'code' => $h->code,
+                'customer_name' => $h->customer?->name,
+                'item_count' => $h->items_count,
+            ],
+        )
+        ->values();
     ?>
 
     <script>
@@ -288,7 +385,13 @@
                 search: '',
                 items: [],
                 showHistory: false,
+                showHeld: false,
+                heldSales: @json($heldSales),
                 now: '',
+                customerId: '',
+                paymentMethod: 'cash',
+                paidAmount: null,
+
 
                 init() {
                     const d = new Date();
@@ -298,6 +401,74 @@
                         this.showHistory = true;
                     @endif
                 },
+                holdCart() {
+                    if (this.items.length === 0) return;
+
+                    fetch("{{ route('sales.hold') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                                    '{{ csrf_token() }}',
+                            },
+                            body: JSON.stringify({
+                                customer_id: this.customerId || null,
+                                items: this.items.map(i => ({
+                                    product_id: i.product_id,
+                                    quantity: i.quantity,
+                                    price: i.price,
+                                })),
+                            }),
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            this.heldSales.unshift({
+                                id: data.held_sale.id,
+                                code: data.held_sale.code,
+                                customer_name: this.items.length ? null : null,
+                                item_count: this.items.length,
+                            });
+                            this.items = [];
+                            this.customerId = '';
+                        })
+                        .catch(() => alert('Gagal menahan transaksi.'));
+                },
+                resumeHold(held) {
+                    fetch(`/sales/hold/${held.id}/resume`, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                                    '{{ csrf_token() }}',
+                            },
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            this.items = data.items;
+                            this.customerId = data.customer_id || '';
+                            this.heldSales = this.heldSales.filter(h => h.id !== held.id);
+                            this.showHeld = false;
+                        })
+                        .catch(() => alert('Gagal memuat transaksi ditahan.'));
+                },
+                deleteHold(held) {
+                    if (!confirm('Hapus transaksi ditahan ini?')) return;
+
+                    fetch(`/sales/hold/${held.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ||
+                                    '{{ csrf_token() }}',
+                            },
+                        })
+                        .then(() => {
+                            this.heldSales = this.heldSales.filter(h => h.id !== held.id);
+                        })
+                        .catch(() => alert('Gagal menghapus transaksi ditahan.'));
+                },
+
                 get filteredProducts() {
                     const q = this.search.trim().toLowerCase();
                     if (!q) return this.allProducts;
@@ -354,6 +525,9 @@
                 get grandTotal() {
                     return this.subTotal - this.totalDiscount;
                 },
+                get changeAmount() {
+                    return (this.paidAmount || 0) - this.grandTotal;
+                },
 
                 onSubmit(event) {
                     event.preventDefault();
@@ -362,6 +536,12 @@
                     const form = event.target;
                     const formData = new FormData(form);
                     const isCashless = formData.get('payment_method') === 'cashless';
+
+                    if (!isCashless && this.changeAmount < 0) {
+                        alert('Jumlah bayar kurang dari total belanja.');
+                        return;
+                    }
+
 
                     fetch(form.action, {
                             method: 'POST',

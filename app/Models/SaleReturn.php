@@ -6,13 +6,18 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['invoice_number', 'customer_id', 'user_id', 'sale_date', 'sub_total', 'discount', 'grand_amount', 'paid_amount', 'change_amount', 'payment_method', 'payment_status', 'midtrans_order_id', 'snap_token'])]
-#[Table('sales')]
-class Sale extends Model
+#[Fillable(['sale_id', 'customer_id', 'user_id', 'return_date', 'reason', 'notes', 'total_amount'])]
+#[Table('sale_returns')]
+class SaleReturn extends Model
 {
     protected $casts = [
-        'sale_date' => 'datetime',
+        'return_date' => 'datetime',
     ];
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
 
     public function customer()
     {
@@ -24,8 +29,8 @@ class Sale extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function saleDetails()
+    public function saleReturnDetails()
     {
-        return $this->hasMany(SaleDetail::class);
+        return $this->hasMany(SaleReturnDetail::class);
     }
 }
