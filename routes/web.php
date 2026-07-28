@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/purchase-returns', [PurchaseReturnController::class, 'store'])->name('purchase-returns.store');
 
         Route::get('/sales', [SaleController::class, 'index'])->name('sales');
+        Route::get('/sales/products/search', [SaleController::class, 'searchProducts'])->name('sales.products.search');
         Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
         Route::get('/sales/history', [SaleController::class, 'history'])->name('sales.history');
         Route::get('/sales/{sale}/receipt', [SaleController::class, 'receipt'])->name('sales.receipt');

@@ -8,7 +8,8 @@
     <div x-data="saleForm()" x-init="init()" class="flex h-full min-h-0 flex-col lg:flex-row">
         {{-- Product picker --}}
         <section
-            class="flex min-h-[45vh] w-full flex-col border-b border-slate-200 bg-slate-50 lg:min-h-0 lg:w-2/3 lg:border-b-0 lg:border-r">
+            class="flex h-[45vh] w-full flex-col border-b border-slate-200 bg-slate-50 lg:h-auto lg:min-h-0 lg:w-2/3 lg:border-b-0 lg:border-r">
+
             <div class="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-4 py-3 sm:gap-3">
                 <div class="relative min-w-40 flex-1">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -48,25 +49,29 @@
             </div>
 
 
-            <div class="min-h-0 flex-1 overflow-y-auto p-4">
+            <div class="min-h-0 flex-1 overflow-y-auto p-4" @scroll="onProductScroll">
                 <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-                    <template x-for="product in filteredProducts" :key="product.id">
+                    <template x-for="product in products" :key="product.id">
                         <button type="button" @click="addItem(product)" :disabled="product.stock <= 0"
                             class="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0">
                             <span class="mb-1 line-clamp-2 text-sm font-medium text-slate-800" x-text="product.name"></span>
                             <span class="text-xs text-slate-400" x-text="product.sku"></span>
                             <span class="mt-2 text-sm font-semibold text-blue-600"
-                                x-text="'Rp ' + product.selling_price.toLocaleString('id-ID')"></span>
+                                x-text="'Rp ' + Number(product.selling_price).toLocaleString('id-ID')"></span>
                             <span class="mt-1 inline-flex w-fit items-center rounded-full px-2 py-0.5 text-xs"
                                 :class="product.stock > 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'"
                                 x-text="'Stok: ' + product.stock"></span>
                         </button>
                     </template>
-                    <template x-if="filteredProducts.length === 0">
+                    <template x-if="!loading && products.length === 0">
                         <p class="col-span-full py-10 text-center text-sm text-slate-400">Produk tidak ditemukan.</p>
                     </template>
                 </div>
+                <template x-if="loading">
+                    <p class="py-4 text-center text-sm text-slate-400">Memuat produk...</p>
+                </template>
             </div>
+
         </section>
 
 
@@ -340,7 +345,7 @@
 
     <?php
     
-    $mappedProducts = $products
+    $mappedProducts = collect($products->items())
         ->map(
             fn($p) => [
                 'id' => $p->id,
@@ -353,6 +358,7 @@
         )
         ->values();
     
+
     $mappedRules = $discountRules
         ->map(
             fn($r) => [
@@ -381,9 +387,13 @@
     <script>
         function saleForm() {
             return {
-                allProducts: @json($mappedProducts),
+                products: @json($mappedProducts),
                 discountRules: @json($mappedRules),
                 search: '',
+                searchTimer: null,
+                loading: false,
+                page: 1,
+                hasMore: {{ $products->hasMorePages() ? 'true' : 'false' }},
                 items: [],
                 showHistory: false,
                 showHeld: false,
@@ -401,7 +411,33 @@
                     @if (session('success'))
                         this.showHistory = true;
                     @endif
+
+                    this.$watch('search', () => {
+                        clearTimeout(this.searchTimer);
+                        this.searchTimer = setTimeout(() => this.loadProducts(1), 350);
+                    });
                 },
+                loadProducts(page) {
+                    this.loading = true;
+                    fetch(`{{ route('sales.products.search') }}?q=${encodeURIComponent(this.search)}&page=${page}`, {
+                            headers: { 'Accept': 'application/json' },
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            this.products = page === 1 ? data.data : this.products.concat(data.data);
+                            this.hasMore = data.has_more;
+                            this.page = page;
+                        })
+                        .finally(() => this.loading = false);
+                },
+                onProductScroll(event) {
+                    const el = event.target;
+                    if (!this.loading && this.hasMore &&
+                        el.scrollTop + el.clientHeight >= el.scrollHeight - 150) {
+                        this.loadProducts(this.page + 1);
+                    }
+                },
+
                 holdCart() {
                     if (this.items.length === 0) return;
 
@@ -470,13 +506,8 @@
                         .catch(() => alert('Gagal menghapus transaksi ditahan.'));
                 },
 
-                get filteredProducts() {
-                    const q = this.search.trim().toLowerCase();
-                    if (!q) return this.allProducts;
-                    return this.allProducts.filter(p =>
-                        p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q));
-                },
                 addItem(product) {
+
                     if (product.stock <= 0) return;
                     const existing = this.items.find(i => i.product_id === product.id);
                     if (existing) {

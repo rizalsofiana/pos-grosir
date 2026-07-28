@@ -30,13 +30,14 @@
 
     <div class="grid gap-6 @if (auth()->user()->isAdmin()) lg:grid-cols-[1.3fr_1fr] @endif">
         {{-- Daftar Stok --}}
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+            <div
+                class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-800">Daftar Stok Produk</h2>
                     <p class="text-xs text-slate-400">{{ $products->total() }} produk terdaftar</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-end gap-3">
                     <form method="GET" action="{{ route('stock') }}"
                         class="flex items-center gap-2 text-sm text-slate-500">
                         <label for="per_page">Tampilkan</label>
@@ -58,7 +59,8 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Desktop / tablet view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead>
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -102,8 +104,43 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-                <span>
+
+            {{-- Mobile card list view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @forelse ($products as $product)
+                    <div class="p-4 transition-colors hover:bg-slate-50">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">{{ $product->name }}</p>
+                                <p class="text-xs text-slate-400">SKU: {{ $product->sku }}</p>
+                            </div>
+                            <span
+                                class="text-sm font-semibold {{ $product->stock <= 0 ? 'text-red-600' : 'text-slate-800' }}">
+                                {{ $product->stock }} Pcs
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-slate-500">
+                            <span>Kategori: <strong
+                                    class="text-slate-700">{{ $product->category?->name ?? '-' }}</strong></span>
+                            <a href="{{ route('stock.history', $product) }}"
+                                class="text-blue-600 font-medium hover:underline">Liwayat Stok &rarr;</a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 8h18M3 8l2-5h14l2 5M3 8v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8" />
+                            <path d="M9 12h6" />
+                        </svg>
+                        <p class="text-sm">Belum ada produk.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div
+                class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+                <span class="text-center sm:text-left">
                     Menampilkan {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
                     dari {{ $products->total() }} data
                 </span>

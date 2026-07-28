@@ -22,13 +22,13 @@
 
     <div class="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         {{-- Riwayat Stok Opname --}}
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+            <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-800">Riwayat Stok Opname</h2>
                     <p class="text-xs text-slate-400">{{ $stockOpnames->total() }} sesi tercatat</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-end gap-3">
                     <form method="GET" action="{{ route('stock-opnames') }}"
                         class="flex items-center gap-2 text-sm text-slate-500">
                         <label for="per_page">Tampilkan</label>
@@ -51,9 +51,10 @@
                 </div>
             </div>
 
-            <div class="max-h-160 overflow-y-auto">
+            {{-- Desktop / tablet view --}}
+            <div class="hidden md:block max-h-160 overflow-y-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur">
+                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur z-10">
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                             <th class="px-5 py-3">Kode</th>
                             <th class="px-5 py-3">Tanggal</th>
@@ -97,8 +98,43 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-                <span>
+
+            {{-- Mobile card list view --}}
+            <div class="block md:hidden max-h-160 overflow-y-auto divide-y divide-slate-100">
+                @forelse ($stockOpnames as $stockOpname)
+                    <div class="p-4 transition-colors hover:bg-slate-50">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <p class="text-xs text-slate-400">
+                                    {{ \Illuminate\Support\Carbon::parse($stockOpname->opname_date)->format('d/m/Y H:i') }}
+                                </p>
+                                <p class="text-sm font-semibold text-slate-800">{{ $stockOpname->code }}</p>
+                            </div>
+                            <a href="{{ route('stock-opnames.show', $stockOpname) }}"
+                                class="text-xs font-medium text-blue-600 hover:text-blue-700">Detail &rarr;</a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500">
+                            <span>Petugas</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $stockOpname->user?->name ?? '-' }}</span>
+                            <span>Total Item</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $stockOpname->stock_opname_details_count }} produk</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <rect x="3" y="8" width="18" height="12" rx="1.5" />
+                            <path d="M3 8l2.5-4h13L21 8" />
+                        </svg>
+                        <p class="text-sm">Belum ada sesi stok opname.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+                <span class="text-center sm:text-left">
                     Menampilkan {{ $stockOpnames->firstItem() ?? 0 }}-{{ $stockOpnames->lastItem() ?? 0 }}
                     dari {{ $stockOpnames->total() }} data
                 </span>
@@ -143,21 +179,29 @@
                         <label class="block text-xs font-medium text-slate-500">Stok Fisik Produk</label>
                         <span class="text-xs text-slate-400" x-text="checkedCount + ' produk diisi'"></span>
                     </div>
-                    <div class="max-h-96 space-y-2 overflow-y-auto rounded-xl border border-slate-200 p-3">
+                    <div class="max-h-96 space-y-3 overflow-y-auto rounded-xl border border-slate-200 p-3">
                         <template x-for="product in filteredProducts" :key="product.id">
-                            <div
-                                class="grid grid-cols-12 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <div class="col-span-5">
-                                    <p class="text-sm font-medium text-slate-700" x-text="product.name"></p>
+                            {{-- Container item --}}
+                            <div class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-700" x-text="product.name"></p>
                                     <p class="text-xs text-slate-400">
-                                        Sistem: <span x-text="product.stock"></span>
+                                        Stok Sistem: <span class="font-medium text-slate-600" x-text="product.stock"></span>
                                     </p>
                                 </div>
-                                <input type="number" min="0" x-model.number="product.physical_stock"
-                                    placeholder="Stok fisik"
-                                    class="col-span-3 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none">
-                                <input type="text" x-model="product.note" placeholder="Catatan (opsional)"
-                                    class="col-span-4 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none">
+                                <div class="grid grid-cols-2 gap-2 mt-1">
+                                    <div>
+                                        <label class="mb-1 block text-[10px] font-medium text-slate-400">Stok Fisik</label>
+                                        <input type="number" min="0" x-model.number="product.physical_stock"
+                                            placeholder="Fisik"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="mb-1 block text-[10px] font-medium text-slate-400">Catatan</label>
+                                        <input type="text" x-model="product.note" placeholder="Catatan"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none">
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>

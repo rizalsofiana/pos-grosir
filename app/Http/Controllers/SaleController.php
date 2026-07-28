@@ -27,13 +27,36 @@ class SaleController extends Controller
                 ->latest('sale_date')
                 ->get(),
             'customers' => Customer::orderBy('name')->get(),
-            'products' => Product::orderBy('name')->get(),
+            'products' => Product::orderBy('name')->paginate(40),
             'discountRules' => DiscountRule::active()->get(),
             'heldSales' => HeldSale::with('customer')->latest()->get(),
             'midtransClientKey' => config('midtrans.client_key'),
             'midtransIsProduction' => config('midtrans.is_production'),
         ]);
     }
+
+    public function searchProducts(Request $request)
+    {
+        $search = trim((string) $request->query('q', ''));
+
+        $query = Product::orderBy('name');
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->paginate(40);
+
+        return response()->json([
+            'data' => $products->items(),
+            'has_more' => $products->hasMorePages(),
+            'next_page' => $products->currentPage() + 1,
+        ]);
+    }
+
 
     public function hold(Request $request)
     {

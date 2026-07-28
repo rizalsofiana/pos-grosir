@@ -22,13 +22,13 @@
 
     <div class="grid gap-6 lg:grid-cols-[1.1fr_1fr] xl:grid-cols-[1.3fr_1fr]">
         {{-- Riwayat Retur Penjualan --}}
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+            <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-800">Riwayat Retur Penjualan</h2>
                     <p class="text-xs text-slate-400">{{ $saleReturns->total() }} retur tercatat</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-end gap-3">
                     <form method="GET" action="{{ route('sale-returns') }}"
                         class="flex items-center gap-2 text-sm text-slate-500">
                         <label for="per_page">Tampilkan</label>
@@ -50,9 +50,10 @@
                 </div>
             </div>
 
-            <div class="max-h-160 overflow-y-auto">
+            {{-- Desktop / tablet view --}}
+            <div class="hidden md:block max-h-160 overflow-y-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur">
+                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur z-10">
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                             <th class="px-5 py-3">Tanggal</th>
                             <th class="px-5 py-3">Invoice</th>
@@ -96,8 +97,46 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-                <span>
+
+            {{-- Mobile card list view --}}
+            <div class="block md:hidden max-h-160 overflow-y-auto divide-y divide-slate-100">
+                @forelse ($saleReturns as $saleReturn)
+                    <div class="p-4 transition-colors hover:bg-slate-50">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <p class="text-xs text-slate-400">
+                                    {{ \Illuminate\Support\Carbon::parse($saleReturn->return_date)->format('d/m/Y H:i') }}
+                                </p>
+                                <p class="text-sm font-semibold text-slate-800">
+                                    {{ $saleReturn->sale?->invoice_number ?? '-' }}
+                                </p>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-800">
+                                Rp {{ number_format($saleReturn->total_amount, 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500">
+                            <span>Customer</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $saleReturn->customer?->name ?? 'Umum' }}</span>
+                            <span>Kasir</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $saleReturn->user?->name ?? '-' }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M9 14l-4-4 4-4" />
+                            <path d="M5 10h11a4 4 0 0 1 0 8h-1" />
+                        </svg>
+                        <p class="text-sm">Belum ada retur penjualan.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+                <span class="text-center sm:text-left">
                     Menampilkan {{ $saleReturns->firstItem() ?? 0 }}-{{ $saleReturns->lastItem() ?? 0 }}
                     dari {{ $saleReturns->total() }} data
                 </span>
@@ -165,36 +204,50 @@
 
                         <div>
                             <label class="mb-2 block text-xs font-medium text-slate-500">Item yang Diretur</label>
-                            <div class="space-y-2">
+                            <div class="space-y-3">
                                 <template x-for="(detail, index) in saleDetails" :key="detail.id">
                                     <div x-show="detail.returnable_quantity > 0"
-                                        class="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                        <div class="mb-2 flex items-center justify-between">
-                                            <span class="text-sm font-medium text-slate-700"
-                                                x-text="detail.product?.name"></span>
-                                            <span class="text-xs text-slate-400"
-                                                x-text="'Sisa bisa diretur: ' + detail.returnable_quantity"></span>
+                                        class="rounded-xl border border-slate-200 bg-slate-50/60 p-3 flex flex-col gap-2">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="flex items-start gap-2">
+                                                <input type="checkbox" x-model="detail.selected"
+                                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                <div>
+                                                    <span class="text-sm font-medium text-slate-700 block"
+                                                        x-text="detail.product?.name"></span>
+                                                    <span class="text-xs text-slate-400 block"
+                                                        x-text="'Sisa bisa diretur: ' + detail.returnable_quantity"></span>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs font-semibold text-slate-600"
+                                                x-text="'Rp ' + (detail.price || 0).toLocaleString('id-ID')"></span>
                                         </div>
-                                        <div class="grid grid-cols-12 items-center gap-2">
-                                            <input type="checkbox" x-model="detail.selected"
-                                                class="col-span-1 h-4 w-4 rounded border-slate-300">
+                                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-1">
                                             <input type="number" min="0" :max="detail.returnable_quantity"
                                                 x-model.number="detail.return_quantity"
                                                 :name="detail.selected ? 'items[' + index + '][sale_detail_id]' : null"
                                                 class="hidden">
                                             <input type="hidden" :value="detail.id"
                                                 :name="detail.selected ? 'items[' + index + '][sale_detail_id]' : ''">
-                                            <input type="number" min="1" :max="detail.returnable_quantity"
-                                                x-model.number="detail.return_quantity" placeholder="Qty"
-                                                :disabled="!detail.selected"
-                                                :name="detail.selected ? 'items[' + index + '][quantity]' : ''"
-                                                class="col-span-4 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none disabled:bg-slate-100 sm:col-span-3">
-                                            <select :disabled="!detail.selected" x-model="detail.condition"
-                                                :name="detail.selected ? 'items[' + index + '][condition]' : ''"
-                                                class="col-span-7 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none disabled:bg-slate-100 sm:col-span-8">
-                                                <option value="baik">Baik (stok dikembalikan)</option>
-                                                <option value="rusak">Rusak (stok tidak dikembalikan)</option>
-                                            </select>
+                                            
+                                            <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                                                <label class="text-xs text-slate-500 sm:hidden w-10 shrink-0">Qty:</label>
+                                                <input type="number" min="1" :max="detail.returnable_quantity"
+                                                    x-model.number="detail.return_quantity" placeholder="Qty"
+                                                    :disabled="!detail.selected"
+                                                    :name="detail.selected ? 'items[' + index + '][quantity]' : ''"
+                                                    class="w-full sm:w-20 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none disabled:bg-slate-100">
+                                            </div>
+
+                                            <div class="flex items-center gap-2 w-full">
+                                                <label class="text-xs text-slate-500 sm:hidden w-10 shrink-0">Kondisi:</label>
+                                                <select :disabled="!detail.selected" x-model="detail.condition"
+                                                    :name="detail.selected ? 'items[' + index + '][condition]' : ''"
+                                                    class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none disabled:bg-slate-100">
+                                                    <option value="baik">Baik (stok dikembalikan)</option>
+                                                    <option value="rusak">Rusak (stok tidak dikembalikan)</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>

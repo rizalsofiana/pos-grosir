@@ -10,7 +10,7 @@
             class="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9" />
+                <circle cx="12x" cy="12" r="9" />
                 <path d="M8.5 12.5l2.5 2.5 4.5-5" />
             </svg>
             <span class="flex-1">{{ session('success') }}</span>
@@ -22,13 +22,13 @@
 
     <div class="grid gap-6 lg:grid-cols-[1.1fr_1fr] xl:grid-cols-[1.3fr_1fr]">
         {{-- Riwayat Retur Pembelian --}}
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+            <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-800">Riwayat Retur Pembelian</h2>
                     <p class="text-xs text-slate-400">{{ $purchaseReturns->total() }} retur tercatat</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-end gap-3">
                     <form method="GET" action="{{ route('purchase-returns') }}"
                         class="flex items-center gap-2 text-sm text-slate-500">
                         <label for="per_page">Tampilkan</label>
@@ -50,9 +50,10 @@
                 </div>
             </div>
 
-            <div class="max-h-160 overflow-y-auto">
+            {{-- Desktop / tablet view --}}
+            <div class="hidden md:block max-h-160 overflow-y-auto">
                 <table class="min-w-full text-sm">
-                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur">
+                    <thead class="sticky top-0 bg-slate-50/90 backdrop-blur z-10">
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                             <th class="px-5 py-3">Tanggal</th>
                             <th class="px-5 py-3">No. Pembelian</th>
@@ -96,8 +97,46 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-                <span>
+
+            {{-- Mobile card list view --}}
+            <div class="block md:hidden max-h-160 overflow-y-auto divide-y divide-slate-100">
+                @forelse ($purchaseReturns as $purchaseReturn)
+                    <div class="p-4 transition-colors hover:bg-slate-50">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <p class="text-xs text-slate-400">
+                                    {{ \Illuminate\Support\Carbon::parse($purchaseReturn->return_date)->format('d/m/Y H:i') }}
+                                </p>
+                                <p class="text-sm font-semibold text-slate-800">
+                                    {{ $purchaseReturn->purchase?->invoice_number ?? '-' }}
+                                </p>
+                            </div>
+                            <span class="text-sm font-semibold text-slate-800">
+                                Rp {{ number_format($purchaseReturn->total_amount, 0, ',', '.') }}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500">
+                            <span>Supplier</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $purchaseReturn->supplier?->name ?? '-' }}</span>
+                            <span>Kasir</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $purchaseReturn->user?->name ?? '-' }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M15 6l4 4-4 4" />
+                            <path d="M19 10H8a4 4 0 0 0 0 8h1" />
+                        </svg>
+                        <p class="text-sm">Belum ada retur pembelian.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+                <span class="text-center sm:text-left">
                     Menampilkan {{ $purchaseReturns->firstItem() ?? 0 }}-{{ $purchaseReturns->lastItem() ?? 0 }}
                     dari {{ $purchaseReturns->total() }} data
                 </span>
@@ -154,26 +193,39 @@
                         <button type="button" @click="addItem()"
                             class="text-xs font-medium text-blue-600 hover:text-blue-700">+ Tambah Item</button>
                     </div>
-                    <div class="space-y-2">
+                    <div class="space-y-3">
                         <template x-for="(item, index) in items" :key="item.key">
-                            <div class="grid grid-cols-12 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                                <select x-model="item.product_id" @change="onProductChange(item)"
-                                    :name="'items[' + index + '][product_id]'" required
-                                    class="col-span-5 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none">
-                                    <option value="">Pilih Produk</option>
-                                    @foreach ($products as $product)
-                                        <option value="{{ $product->id }}" data-price="{{ $product->purchase_price ?? $product->price }}">
-                                            {{ $product->name }}</option>
-                                    @endforeach
-                                </select>
-                                <input type="number" min="1" x-model.number="item.quantity"
-                                    :name="'items[' + index + '][quantity]'" placeholder="Qty" required
-                                    class="col-span-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none">
-                                <input type="number" min="0" step="0.01" x-model.number="item.price"
-                                    :name="'items[' + index + '][price]'" placeholder="Harga" required
-                                    class="col-span-3 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right text-sm focus:border-blue-500 focus:outline-none">
-                                <button type="button" @click="removeItem(index)"
-                                    class="col-span-2 rounded-lg px-2 py-1.5 text-sm text-red-500 hover:bg-red-50">Hapus</button>
+                            <div class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex-1">
+                                        <label class="mb-1 block text-[10px] font-medium text-slate-400">Pilih Produk</label>
+                                        <select x-model="item.product_id" @change="onProductChange(item)"
+                                            :name="'items[' + index + '][product_id]'" required
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none">
+                                            <option value="">Pilih Produk</option>
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product->id }}" data-price="{{ $product->purchase_price ?? $product->price }}">
+                                                    {{ $product->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <button type="button" @click="removeItem(index)"
+                                        class="mt-4 rounded-lg px-2 py-1.5 text-sm text-red-500 hover:bg-red-50 shrink-0">Hapus</button>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mt-1">
+                                    <div>
+                                        <label class="mb-1 block text-[10px] font-medium text-slate-400">Qty</label>
+                                        <input type="number" min="1" x-model.number="item.quantity"
+                                            :name="'items[' + index + '][quantity]'" placeholder="Qty" required
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center text-sm focus:border-blue-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="mb-1 block text-[10px] font-medium text-slate-400">Harga</label>
+                                        <input type="number" min="0" step="0.01" x-model.number="item.price"
+                                            :name="'items[' + index + '][price]'" placeholder="Harga" required
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right text-sm focus:border-blue-500 focus:outline-none">
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>

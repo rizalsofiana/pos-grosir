@@ -22,13 +22,13 @@
 
     <div class="grid gap-6 lg:grid-cols-[1.3fr_1fr]" x-data="discountPage()">
         {{-- Daftar Aturan Diskon --}}
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+            <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="font-semibold text-slate-800">Daftar Aturan Diskon</h2>
                     <p class="text-xs text-slate-400">{{ $rules->total() }} aturan terdaftar</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-between sm:justify-end gap-3">
                     <form method="GET" action="{{ route('discounts') }}"
                         class="flex items-center gap-2 text-sm text-slate-500">
                         <label for="per_page">Tampilkan</label>
@@ -51,7 +51,8 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Desktop / tablet view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead>
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -71,11 +72,11 @@
                                     @if ($rule->scope === 'product')
                                         <span
                                             class="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">Produk</span>
-                                        <span class="text-slate-500">{{ $rule->product?->name }}</span>
+                                        <span class="text-slate-500 text-xs block mt-0.5">{{ $rule->product?->name }}</span>
                                     @else
                                         <span
                                             class="inline-flex rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">Kategori</span>
-                                        <span class="text-slate-500">{{ $rule->category?->name }}</span>
+                                        <span class="text-slate-500 text-xs block mt-0.5">{{ $rule->category?->name }}</span>
                                     @endif
                                 </td>
                                 <td class="px-5 py-3 text-right text-slate-600">{{ $rule->min_qty }}</td>
@@ -147,8 +148,91 @@
                     </tbody>
                 </table>
             </div>
-            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-                <span>
+
+            {{-- Mobile card list view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @forelse ($rules as $rule)
+                    <div class="p-4 transition-colors hover:bg-slate-50 {{ !$rule->is_active ? 'opacity-60' : '' }}">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-800">{{ $rule->name }}</h3>
+                                <div class="mt-1 flex flex-wrap gap-1">
+                                    @if ($rule->scope === 'product')
+                                        <span class="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-600">Produk</span>
+                                        <span class="text-slate-500 text-xs mt-0.5">{{ $rule->product?->name }}</span>
+                                    @else
+                                        <span class="inline-flex rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-medium text-purple-600">Kategori</span>
+                                        <span class="text-slate-500 text-xs mt-0.5">{{ $rule->category?->name }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-slate-800 shrink-0">
+                                @if ($rule->discount_type === 'percentage')
+                                    {{ rtrim(rtrim(number_format($rule->discount_value, 2), '0'), '.') }}%
+                                @else
+                                    Rp{{ number_format($rule->discount_value, 0, ',', '.') }}
+                                @endif
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500 mb-3">
+                            <span>Minimal Qty</span>
+                            <span class="text-right text-slate-700 font-semibold">{{ $rule->min_qty }} Unit</span>
+                            <span>Status</span>
+                            <span class="text-right">
+                                @if ($rule->is_active)
+                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-600">Aktif</span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">Nonaktif</span>
+                                @endif
+                            </span>
+                        </div>
+                        <div class="flex justify-end gap-3 text-xs border-t border-slate-50 pt-2">
+                            <button type="button" @click="edit(@js([
+        'id' => $rule->id,
+        'name' => $rule->name,
+        'scope' => $rule->scope,
+        'product_id' => $rule->product_id,
+        'category_id' => $rule->category_id,
+        'min_qty' => $rule->min_qty,
+        'discount_type' => $rule->discount_type,
+        'discount_value' => $rule->discount_value,
+    ]))"
+                                class="font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:underline">Edit</button>
+
+                            <form method="POST" action="{{ route('discounts.toggle', $rule) }}">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit"
+                                    class="font-medium {{ $rule->is_active ? 'text-amber-600 bg-amber-50' : 'text-emerald-600 bg-emerald-50' }} px-3 py-1.5 rounded-lg hover:underline">
+                                    {{ $rule->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                </button>
+                            </form>
+
+                            <form method="POST" action="{{ route('discounts.destroy', $rule) }}"
+                                onsubmit="return confirm('Hapus aturan diskon ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg hover:underline">Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path
+                                d="M20.59 13.41L11 3.83A2 2 0 0 0 9.59 3.17H5a2 2 0 0 0-2 2v4.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z" />
+                            <path d="M7 7h.01" />
+                        </svg>
+                        <p class="text-sm">Belum ada aturan diskon.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+                <span class="text-center sm:text-left">
                     Menampilkan {{ $rules->firstItem() ?? 0 }}-{{ $rules->lastItem() ?? 0 }}
                     dari {{ $rules->total() }} data
                 </span>
