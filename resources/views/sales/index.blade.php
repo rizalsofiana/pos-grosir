@@ -5,11 +5,12 @@
 @section('page-subtitle', 'Transaksi penjualan ke customer')
 
 @section('content')
-    <div x-data="saleForm()" x-init="init()" class="flex h-full min-h-0">
+    <div x-data="saleForm()" x-init="init()" class="flex h-full min-h-0 flex-col lg:flex-row">
         {{-- Product picker --}}
-        <section class="flex min-h-0 w-full flex-col border-r border-slate-200 bg-slate-50 lg:w-2/3">
-            <div class="flex shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 py-3">
-                <div class="relative flex-1">
+        <section
+            class="flex min-h-[45vh] w-full flex-col border-b border-slate-200 bg-slate-50 lg:min-h-0 lg:w-2/3 lg:border-b-0 lg:border-r">
+            <div class="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-4 py-3 sm:gap-3">
+                <div class="relative min-w-40 flex-1">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -27,7 +28,7 @@
                         <rect x="6" y="4" width="4" height="16" />
                         <rect x="14" y="4" width="4" height="16" />
                     </svg>
-                    Ditahan
+                    <span class="hidden sm:inline">Ditahan</span>
                     <template x-if="heldSales.length > 0">
                         <span
                             class="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-semibold text-white"
@@ -42,7 +43,7 @@
                         <path d="M3 4v4h4" />
                         <path d="M12 7v5l3 3" />
                     </svg>
-                    Riwayat
+                    <span class="hidden sm:inline">Riwayat</span>
                 </button>
             </div>
 
@@ -70,7 +71,7 @@
 
 
         {{-- Cart / checkout --}}
-        <section class="flex min-h-0 w-full flex-col bg-white lg:w-1/3">
+        <section class="flex min-h-[45vh] w-full flex-1 flex-col bg-white lg:min-h-0 lg:w-1/3 lg:flex-none">
             <form method="POST" action="{{ route('sales.store') }}" @submit="onSubmit"
                 class="flex min-h-0 flex-1 flex-col">
                 @csrf

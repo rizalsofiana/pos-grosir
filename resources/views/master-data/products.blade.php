@@ -9,11 +9,12 @@
         <div class="mb-4 rounded bg-green-100 p-3 text-sm text-green-700">{{ session('success') }}</div>
     @endif
 
-    <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]" x-data="productPage()">
+    <div class="grid gap-4 sm:gap-6 lg:grid-cols-[1.2fr_0.8fr]" x-data="productPage()">
         <div class="rounded-xl bg-white p-4 shadow">
-            <div class="mb-4 flex items-center justify-between">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 class="font-semibold">Daftar Produk</h2>
                 <form method="GET" action="{{ route('products') }}" class="flex items-center gap-2 text-sm text-slate-500">
+
                     <label for="per_page">Tampilkan</label>
                     <select id="per_page" name="per_page" onchange="this.form.submit()"
                         class="rounded border border-slate-200 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none">
@@ -121,7 +122,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4 flex items-center justify-between text-sm text-slate-500">
+            <div class="mt-4 flex flex-col items-center justify-between gap-2 text-sm text-slate-500 sm:flex-row">
                 <span>
                     Menampilkan {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}
                     dari {{ $products->total() }} data
@@ -133,7 +134,7 @@
         </div>
 
 
-        <div class="rounded-xl bg-white p-4 shadow">
+        <div class="rounded-xl bg-white p-4 shadow lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
             <h2 class="mb-4 font-semibold" x-text="mode === 'edit' ? 'Edit Produk' : 'Tambah Produk'"></h2>
             <form method="POST"
                 :action="mode === 'edit' ? '{{ url('products') }}/' + form.id : '{{ route('products.store') }}'"
@@ -160,7 +161,7 @@
                     <input type="text" name="name" x-model="form.name" class="w-full rounded border px-3 py-2"
                         required>
                 </div>
-                <div class="grid gap-3 md:grid-cols-2">
+                <div class="grid gap-3 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm">Harga Beli</label>
                         <input type="number" name="purchase_price" x-model="form.purchase_price"

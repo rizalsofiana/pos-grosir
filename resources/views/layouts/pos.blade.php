@@ -9,12 +9,13 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
-<body class="h-screen overflow-hidden bg-slate-100 text-slate-800">
-    <div class="flex h-screen flex-col">
-        <header class="flex shrink-0 items-center justify-between border-b bg-white px-4 py-2.5 shadow-sm">
+<body class="min-h-screen overflow-y-auto bg-slate-100 text-slate-800 lg:h-screen lg:overflow-hidden">
+    <div class="flex min-h-screen flex-col lg:h-screen">
+        <header
+            class="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b bg-white px-4 py-2.5 shadow-sm">
             <div class="flex items-center gap-3">
                 <a href="{{ route('dashboard') }}"
-                    class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                    class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                     title="Kembali ke dashboard">
                     &larr;
                 </a>
@@ -24,7 +25,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-slate-600">{{ auth()->user()?->name }}</span>
+                <span class="hidden text-sm text-slate-600 sm:inline">{{ auth()->user()?->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button class="rounded-lg bg-slate-800 px-3 py-1.5 text-sm text-white hover:bg-slate-700">

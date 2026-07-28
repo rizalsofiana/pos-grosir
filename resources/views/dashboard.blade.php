@@ -6,34 +6,35 @@
 
 @section('content')
     @if (auth()->user()->isAdmin())
-        <div class="grid gap-4 md:grid-cols-4">
-            <a href="{{ route('products') }}" class="rounded-xl bg-white p-4 shadow">
-                <p class="text-sm text-slate-500">Produk</p>
-                <p class="text-2xl font-semibold">{{ $totalProducts }}</p>
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+            <a href="{{ route('products') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
+                <p class="text-xs text-slate-500 sm:text-sm">Produk</p>
+                <p class="text-xl font-semibold sm:text-2xl">{{ $totalProducts }}</p>
             </a>
-            <a href="{{ route('categories') }}" class="rounded-xl bg-white p-4 shadow">
-                <p class="text-sm text-slate-500">Kategori</p>
-                <p class="text-2xl font-semibold">{{ $totalCategories }}</p>
+            <a href="{{ route('categories') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
+                <p class="text-xs text-slate-500 sm:text-sm">Kategori</p>
+                <p class="text-xl font-semibold sm:text-2xl">{{ $totalCategories }}</p>
             </a>
-            <a href="{{ route('suppliers') }}" class="rounded-xl bg-white p-4 shadow">
-                <p class="text-sm text-slate-500">Supplier</p>
-                <p class="text-2xl font-semibold">{{ $totalSuppliers }}</p>
+            <a href="{{ route('suppliers') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
+                <p class="text-xs text-slate-500 sm:text-sm">Supplier</p>
+                <p class="text-xl font-semibold sm:text-2xl">{{ $totalSuppliers }}</p>
             </a>
-            <a href="{{ route('customers') }}" class="rounded-xl bg-white p-4 shadow">
-                <p class="text-sm text-slate-500">Customer</p>
-                <p class="text-2xl font-semibold">{{ $totalCustomers }}</p>
+            <a href="{{ route('customers') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
+                <p class="text-xs text-slate-500 sm:text-sm">Customer</p>
+                <p class="text-xl font-semibold sm:text-2xl">{{ $totalCustomers }}</p>
             </a>
         </div>
 
-        <div class="mt-6 rounded-xl bg-white p-6 shadow">
+        <div class="mt-6 rounded-xl bg-white p-4 shadow sm:p-6">
             <div class="mb-4">
                 <h2 class="text-base font-semibold text-slate-800">Grafik Penjualan</h2>
                 <p class="text-sm text-slate-500">Total penjualan (lunas) 7 hari terakhir</p>
             </div>
-            <div class="h-72">
+            <div class="h-56 sm:h-72">
                 <canvas id="salesChart"></canvas>
             </div>
         </div>
+
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
         <script>

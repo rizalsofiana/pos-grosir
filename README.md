@@ -33,3 +33,7 @@
 - Loyalty
 - Integrasi Marketplace
 - Analitik Lanjutan
+
+## Revisi aalitan
+- Konversi stok (dus/renceng/pcs)
+- fitur piutang
