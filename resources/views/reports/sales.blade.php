@@ -8,52 +8,53 @@
     @include('reports.partials.tabs')
 
     <form method="GET"
-        class="mb-6 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div>
+        class="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end">
+        <div class="flex-1 min-w-0">
             <label class="mb-1 block text-xs font-medium text-slate-500">Dari Tanggal</label>
             <input type="date" name="start_date" value="{{ $startDate }}"
-                class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
         </div>
-        <div>
+        <div class="flex-1 min-w-0">
             <label class="mb-1 block text-xs font-medium text-slate-500">Sampai Tanggal</label>
             <input type="date" name="end_date" value="{{ $endDate }}"
-                class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
         </div>
         <input type="hidden" name="per_page" value="{{ $perPage }}">
-        <button type="submit"
-            class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Filter</button>
-        <a href="{{ route('reports.sales.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
-            class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">Export
-            Excel</a>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <button type="submit"
+                class="flex-1 sm:flex-initial rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Filter</button>
+            <a href="{{ route('reports.sales.export', ['start_date' => $startDate, 'end_date' => $endDate]) }}"
+                class="flex-1 sm:flex-initial text-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 whitespace-nowrap">Export
+                Excel</a>
+        </div>
     </form>
 
-
-    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="mb-6 grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
             <p class="text-xs font-medium text-slate-400">Total Omzet</p>
-            <p class="mt-1 text-xl font-bold text-slate-800">Rp {{ number_format($totalOmzet, 0, ',', '.') }}</p>
+            <p class="mt-1 text-sm sm:text-xl font-bold text-slate-800 wrap-break-word">Rp {{ number_format($totalOmzet, 0, ',', '.') }}</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
             <p class="text-xs font-medium text-slate-400">Total Diskon</p>
-            <p class="mt-1 text-xl font-bold text-slate-800">Rp {{ number_format($totalDiscount, 0, ',', '.') }}</p>
+            <p class="mt-1 text-sm sm:text-xl font-bold text-slate-800 wrap-break-word">Rp {{ number_format($totalDiscount, 0, ',', '.') }}</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-xs font-medium text-slate-400">Jumlah Transaksi</p>
-            <p class="mt-1 text-xl font-bold text-slate-800">{{ $totalTransactions }}</p>
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+            <p class="text-xs font-medium text-slate-400">Transaksi</p>
+            <p class="mt-1 text-sm sm:text-xl font-bold text-slate-800 wrap-break-word">{{ $totalTransactions }}</p>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
             <p class="text-xs font-medium text-slate-400">Laba Kotor</p>
-            <p class="mt-1 text-xl font-bold text-emerald-600">Rp {{ number_format($grossProfit, 0, ',', '.') }}</p>
+            <p class="mt-1 text-sm sm:text-xl font-bold text-emerald-600 wrap-break-word">Rp {{ number_format($grossProfit, 0, ',', '.') }}</p>
         </div>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col">
+        <div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="font-semibold text-slate-800">Detail Transaksi</h2>
                 <p class="text-xs text-slate-400">{{ $sales->total() }} transaksi pada periode ini</p>
             </div>
-            <form method="GET" class="flex items-center gap-2 text-sm text-slate-500">
+            <form method="GET" class="flex items-center justify-between sm:justify-end gap-3 text-sm text-slate-500">
                 <input type="hidden" name="start_date" value="{{ $startDate }}">
                 <input type="hidden" name="end_date" value="{{ $endDate }}">
                 <label for="per_page">Tampilkan</label>
@@ -67,7 +68,8 @@
             </form>
         </div>
 
-        <div class="overflow-x-auto">
+        {{-- Desktop Table View --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
@@ -109,8 +111,44 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-            <span>
+
+        {{-- Mobile Card List View --}}
+        <div class="block md:hidden divide-y divide-slate-100">
+            @forelse ($sales as $sale)
+                <div class="p-4 transition-colors hover:bg-slate-50">
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                            <p class="text-xs text-slate-400">{{ $sale->sale_date->format('d/m/Y H:i') }}</p>
+                            <p class="text-sm font-semibold text-slate-800">{{ $sale->invoice_number }}</p>
+                        </div>
+                        <span class="text-sm font-bold text-slate-800">
+                            Rp{{ number_format($sale->grand_amount, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500">
+                        <span>Customer</span>
+                        <span class="text-right text-slate-700 font-medium">{{ $sale->customer?->name ?? '-' }}</span>
+                        <span>Metode Bayar</span>
+                        <span class="text-right text-slate-700 capitalize font-medium">{{ $sale->payment_method }}</span>
+                        <span>Diskon</span>
+                        <span class="text-right text-slate-700 font-medium">Rp{{ number_format($sale->discount, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            @empty
+                <div class="flex flex-col items-center gap-2 px-5 py-14 text-center text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="16" rx="2" />
+                        <path d="M8 2v4M16 2v4M3 10h18" />
+                    </svg>
+                    <p class="text-sm">Tidak ada transaksi pada periode ini.</p>
+                </div>
+            @endforelse
+        </div>
+
+        <div class="flex flex-col items-center gap-3 border-t border-slate-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:justify-between mt-auto">
+            <span class="text-center sm:text-left">
                 Menampilkan {{ $sales->firstItem() ?? 0 }}-{{ $sales->lastItem() ?? 0 }}
                 dari {{ $sales->total() }} data
             </span>

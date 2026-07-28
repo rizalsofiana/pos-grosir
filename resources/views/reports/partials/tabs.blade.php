@@ -1,4 +1,4 @@
-<div class="mb-6 inline-flex gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+<div class="mb-6 flex w-fit max-w-full overflow-x-auto gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm whitespace-nowrap">
     <a href="{{ route('reports.sales') }}"
         class="rounded-lg px-4 py-2 text-sm font-medium transition-colors {{ request()->routeIs('reports.sales') ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
         Penjualan
