@@ -107,16 +107,37 @@
                 <td>Tunai</td>
                 <td class="right">{{ number_format($sale->paid_amount, 0, ',', '.') }}</td>
             </tr>
-            <tr>
-                <td>Kembalian</td>
-                <td class="right">{{ number_format($sale->change_amount, 0, ',', '.') }}</td>
-            </tr>
+            @if (in_array($sale->payment_status, ['partial', 'unpaid']))
+                <tr>
+                    <td>Sisa Piutang</td>
+                    <td class="right">{{ number_format($sale->outstanding, 0, ',', '.') }}</td>
+
+                </tr>
+            @else
+                <tr>
+                    <td>Kembalian</td>
+                    <td class="right">{{ number_format($sale->change_amount, 0, ',', '.') }}</td>
+                </tr>
+            @endif
         @endif
 
     </table>
 
+    @if (in_array($sale->payment_status, ['partial', 'unpaid']))
+        <div class="line"></div>
+        <div>
+            <strong>*** PIUTANG ***</strong><br>
+            Penghutang: {{ $sale->debtor_name ?? $sale->customer?->name ?? '-' }}<br>
+            @if ($sale->due_date)
+                Jatuh Tempo: {{ $sale->due_date->format('d/m/Y') }}<br>
+            @endif
+            Status: {{ $sale->payment_status === 'unpaid' ? 'Belum Dibayar' : 'Dibayar Sebagian' }}
+        </div>
+    @endif
+
     <div class="line"></div>
     <div class="center">{{ \App\Models\Setting::getValue('receipt_footer', 'Terima kasih atas kunjungan Anda') }}</div>
+
 
 
     <div class="no-print center" style="margin-top: 12px;">

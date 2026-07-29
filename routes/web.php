@@ -8,7 +8,9 @@ use App\Http\Controllers\MasterDataController;
 
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseReturnController;
+use App\Http\Controllers\ReceivableController;
 use App\Http\Controllers\ReportController;
+
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleReturnController;
 use App\Http\Controllers\SettingController;
@@ -63,7 +65,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/stock', [StockController::class, 'index'])->name('stock');
         Route::get('/stock/{product}/history', [StockController::class, 'history'])->name('stock.history');
+
+        Route::get('/receivables', [ReceivableController::class, 'index'])->name('receivables');
+        Route::get('/receivables/{sale}', [ReceivableController::class, 'show'])->name('receivables.show');
+        Route::post('/receivables/{sale}/pay', [ReceivableController::class, 'pay'])->name('receivables.pay');
     });
+
 
     Route::middleware('role:admin')->group(function () {
         Route::post('/stock/adjust', [StockController::class, 'adjust'])->name('stock.adjust');

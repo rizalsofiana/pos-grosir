@@ -114,12 +114,39 @@
                         <input type="number" name="paid_amount" x-model.number="paidAmount" min="0" placeholder="0"
                             class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                         <div class="mt-1 flex justify-between text-xs"
-                            :class="changeAmount < 0 ? 'text-red-500' : 'text-slate-500'">
-                            <span>Kembalian</span>
-                            <span x-text="'Rp ' + Math.max(changeAmount, 0).toLocaleString('id-ID')"></span>
+                            :class="changeAmount < 0 && !isDebt ? 'text-red-500' : 'text-slate-500'">
+                            <span x-text="isDebt ? 'Sisa Piutang' : 'Kembalian'"></span>
+                            <span
+                                x-text="'Rp ' + (isDebt ? Math.max(-changeAmount, 0) : Math.max(changeAmount, 0)).toLocaleString('id-ID')"></span>
                         </div>
+
+                        <label class="mt-3 flex items-center gap-2 text-xs font-medium text-slate-600">
+                            <input type="checkbox" name="is_debt" value="1" x-model="isDebt"
+                                @change="if (isDebt) { showDebtModal = true } else { debtorName = ''; dueDate = ''; }"
+                                class="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-400">
+                            Catat sebagai Piutang
+                        </label>
+
+                        <template x-if="isDebt">
+                            <button type="button" @click="showDebtModal = true"
+                                class="mt-2 flex w-full items-center justify-between gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left text-xs text-amber-700 transition hover:bg-amber-100">
+                                <span class="min-w-0 flex-1 truncate">
+                                    <span class="font-medium" x-text="debtorName || 'Nama belum diisi'"></span>
+                                    <template x-if="dueDate">
+                                        <span> &middot; jatuh tempo <span x-text="dueDate"></span></span>
+                                    </template>
+                                </span>
+                                <span class="shrink-0 font-semibold underline">Ubah</span>
+                            </button>
+                        </template>
+
+                        <input type="hidden" name="debtor_name" :value="debtorName">
+                        <input type="hidden" name="due_date" :value="dueDate">
                     </div>
+
                 </div>
+
+
 
 
                 <div class="min-h-0 flex-1 overflow-y-auto p-4">
@@ -295,7 +322,36 @@
             </div>
         </div>
 
+        {{-- Debt info modal --}}
+        <div x-show="showDebtModal" x-cloak x-transition.opacity
+            class="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+            <div @click.outside="showDebtModal = false" x-show="showDebtModal" x-transition
+                class="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl">
+                <h2 class="mb-3 font-semibold text-slate-800">Detail Piutang</h2>
+                <div class="space-y-3">
+                    <div>
+                        <label class="mb-1 block text-xs font-medium text-slate-500">Nama Penghutang</label>
+                        <input type="text" x-model="debtorName" placeholder="Nama pembeli"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-100">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-xs font-medium text-slate-500">Jatuh Tempo
+                            (opsional)</label>
+                        <input type="date" x-model="dueDate"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-100">
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-end gap-2">
+                    <button type="button" @click="isDebt = false; debtorName = ''; dueDate = ''; showDebtModal = false"
+                        class="rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100">Batal</button>
+                    <button type="button" @click="showDebtModal = false"
+                        class="rounded-lg bg-amber-500 px-3 py-2 text-sm font-semibold text-white hover:bg-amber-600">Simpan</button>
+                </div>
+            </div>
+        </div>
+
         {{-- Held sales modal --}}
+
         <div x-show="showHeld" x-cloak x-transition.opacity
             class="fixed inset-0 z-20 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
             <div @click.outside="showHeld = false" x-show="showHeld" x-transition
@@ -397,11 +453,16 @@
                 items: [],
                 showHistory: false,
                 showHeld: false,
+                showDebtModal: false,
                 heldSales: @json($heldSales),
                 now: '',
                 customerId: '',
                 paymentMethod: 'cash',
                 paidAmount: null,
+                isDebt: false,
+                debtorName: '',
+                dueDate: '',
+
 
 
                 init() {
@@ -569,10 +630,16 @@
                     const formData = new FormData(form);
                     const isCashless = formData.get('payment_method') === 'cashless';
 
-                    if (!isCashless && this.changeAmount < 0) {
+                    if (this.isDebt && !this.debtorName.trim()) {
+                        alert('Nama penghutang wajib diisi untuk transaksi piutang.');
+                        return;
+                    }
+
+                    if (!isCashless && !this.isDebt && this.changeAmount < 0) {
                         alert('Jumlah bayar kurang dari total belanja.');
                         return;
                     }
+
 
 
                     fetch(form.action, {

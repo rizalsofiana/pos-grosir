@@ -38,6 +38,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 4v4h4" /><path d="M12 7v5l3 3" /></svg>
                     <span>Riwayat Transaksi</span>
                 </a>
+                <a href="{{ route('receivables') }}"
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('receivables*') ? 'bg-slate-800' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /><path d="M6 15h4" /></svg>
+                    <span>Piutang</span>
+                </a>
                 <a href="{{ route('sale-returns') }}"
                     class="flex items-center gap-3 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-slate-800 {{ request()->routeIs('sale-returns*') ? 'bg-slate-800' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4-4 4-4" /><path d="M5 10h11a4 4 0 0 1 0 8h-1" /></svg>

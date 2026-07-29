@@ -158,7 +158,11 @@ class SaleController extends Controller
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.price' => ['required', 'numeric', 'min:0'],
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
+            'is_debt' => ['nullable', 'boolean'],
+            'debtor_name' => ['required_if:is_debt,1', 'nullable', 'string', 'max:150'],
+            'due_date' => ['nullable', 'date'],
         ]);
+
 
 
         $sale = DB::transaction(function () use ($data) {
@@ -203,25 +207,38 @@ class SaleController extends Controller
 
             $invoiceNumber = $this->generateInvoiceNumber();
             $isCashless = $data['payment_method'] === 'cashless';
+            $isDebt = !empty($data['is_debt']);
 
             $paidAmount = null;
             $changeAmount = null;
+            $paymentStatus = $isCashless ? 'pending' : 'paid';
 
             if (!$isCashless) {
                 $paidAmount = $data['paid_amount'] ?? $grandAmount;
 
-                if ($paidAmount < $grandAmount) {
+                if (!$isDebt && $paidAmount < $grandAmount) {
                     throw ValidationException::withMessages([
                         'paid_amount' => 'Jumlah bayar kurang dari total belanja.',
                     ]);
                 }
 
-                $changeAmount = $paidAmount - $grandAmount;
+                if ($isDebt) {
+                    if ($paidAmount <= 0) {
+                        $paymentStatus = 'unpaid';
+                    } elseif ($paidAmount < $grandAmount) {
+                        $paymentStatus = 'partial';
+                    } else {
+                        $paymentStatus = 'paid';
+                    }
+                }
+
+                $changeAmount = max(0, $paidAmount - $grandAmount);
             }
 
             $sale = Sale::create([
                 'invoice_number' => $invoiceNumber,
                 'customer_id' => $data['customer_id'],
+                'debtor_name' => $isDebt ? ($data['debtor_name'] ?? null) : null,
                 'user_id' => Auth::id(),
                 'sale_date' => $data['sale_date'],
                 'sub_total' => $subTotal,
@@ -230,9 +247,11 @@ class SaleController extends Controller
                 'paid_amount' => $paidAmount,
                 'change_amount' => $changeAmount,
                 'payment_method' => $data['payment_method'],
-                'payment_status' => $isCashless ? 'pending' : 'paid',
+                'payment_status' => $paymentStatus,
+                'due_date' => $isDebt ? ($data['due_date'] ?? null) : null,
                 'midtrans_order_id' => $isCashless ? $invoiceNumber . '-' . time() : null,
             ]);
+
 
 
             foreach ($data['items'] as $index => $item) {
