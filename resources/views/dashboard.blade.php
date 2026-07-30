@@ -19,10 +19,10 @@
                 <p class="text-xs text-slate-500 sm:text-sm">Supplier</p>
                 <p class="text-xl font-semibold sm:text-2xl">{{ $totalSuppliers }}</p>
             </a>
-            <a href="{{ route('customers') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
+            {{-- <a href="{{ route('customers') }}" class="rounded-xl bg-white p-3 shadow sm:p-4">
                 <p class="text-xs text-slate-500 sm:text-sm">Customer</p>
                 <p class="text-xl font-semibold sm:text-2xl">{{ $totalCustomers }}</p>
-            </a>
+            </a> --}}
         </div>
 
         <div class="mt-6 rounded-xl bg-white p-4 shadow sm:p-6">

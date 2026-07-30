@@ -57,7 +57,7 @@
                         <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                             <th class="px-5 py-3">Tanggal</th>
                             <th class="px-5 py-3">Invoice</th>
-                            <th class="px-5 py-3">Customer</th>
+                            {{-- <th class="px-5 py-3">Customer</th> --}}
                             <th class="px-5 py-3">Kasir</th>
                             <th class="px-5 py-3 text-right">Total</th>
                         </tr>
@@ -73,7 +73,7 @@
                                 <td class="px-5 py-3 font-medium text-slate-700">
                                     {{ $saleReturn->sale?->invoice_number ?? '-' }}
                                 </td>
-                                <td class="px-5 py-3 text-slate-600">{{ $saleReturn->customer?->name ?? 'Umum' }}</td>
+                                {{-- <td class="px-5 py-3 text-slate-600">{{ $saleReturn->customer?->name ?? 'Umum' }}</td> --}}
                                 <td class="px-5 py-3 text-slate-500">{{ $saleReturn->user?->name ?? '-' }}</td>
                                 <td class="px-5 py-3 text-right font-semibold text-slate-800">
                                     Rp {{ number_format($saleReturn->total_amount, 0, ',', '.') }}
@@ -116,8 +116,8 @@
                             </span>
                         </div>
                         <div class="grid grid-cols-2 gap-y-1 text-xs text-slate-500">
-                            <span>Customer</span>
-                            <span class="text-right text-slate-700 font-medium">{{ $saleReturn->customer?->name ?? 'Umum' }}</span>
+                            {{-- <span>Customer</span>
+                            <span class="text-right text-slate-700 font-medium">{{ $saleReturn->customer?->name ?? 'Umum' }}</span> --}}
                             <span>Kasir</span>
                             <span class="text-right text-slate-700 font-medium">{{ $saleReturn->user?->name ?? '-' }}</span>
                         </div>
@@ -182,8 +182,8 @@
                         <input type="hidden" name="sale_id" :value="sale?.id">
 
                         <div class="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-                            <p><span class="font-medium text-slate-700">Customer:</span> <span
-                                    x-text="sale?.customer?.name ?? 'Umum'"></span></p>
+                            {{-- <p><span class="font-medium text-slate-700">Customer:</span> <span
+                                    x-text="sale?.customer?.name ?? 'Umum'"></span></p> --}}
                             <p><span class="font-medium text-slate-700">Tanggal Transaksi:</span> <span
                                     x-text="sale?.sale_date"></span></p>
                         </div>

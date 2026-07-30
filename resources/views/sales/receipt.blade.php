@@ -65,7 +65,7 @@
         No: {{ $sale->invoice_number }}<br>
         Tanggal: {{ $sale->sale_date->format('d/m/Y H:i') }}<br>
         Kasir: {{ $sale->user?->name ?? '-' }}<br>
-        Customer: {{ $sale->customer?->name ?? '-' }}
+        {{-- Customer: {{ $sale->customer?->name ?? '-' }} --}}
     </div>
     <div class="line"></div>
     <table>

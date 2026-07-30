@@ -89,7 +89,7 @@
                 </div>
 
                 <div class="shrink-0 space-y-3 border-b border-slate-200 p-4">
-                    <div>
+                    {{-- <div>
                         <label class="mb-1 block text-xs font-medium text-slate-500">Customer (opsional)</label>
                         <select name="customer_id" x-model="customerId"
                             class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
@@ -99,7 +99,7 @@
                             @endforeach
                         </select>
 
-                    </div>
+                    </div> --}}
                     <div>
                         <label class="mb-1 block text-xs font-medium text-slate-500">Metode Pembayaran</label>
                         <select name="payment_method" x-model="paymentMethod"
@@ -285,7 +285,7 @@
                                 class="border-b border-slate-100 text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                                 <th class="py-2 px-2">Invoice</th>
                                 <th class="py-2 px-2">Tanggal</th>
-                                <th class="py-2 px-2">Customer</th>
+                                {{-- <th class="py-2 px-2">Customer</th> --}}
                                 <th class="py-2 px-2 text-right">Total</th>
                                 <th class="py-2 px-2">Bayar</th>
                                 <th class="py-2 px-2"></th>
@@ -296,7 +296,7 @@
                                 <tr class="transition hover:bg-slate-50">
                                     <td class="py-2.5 px-2 font-medium text-slate-700">{{ $sale->invoice_number }}</td>
                                     <td class="py-2.5 px-2 text-slate-500">{{ $sale->sale_date->format('d/m/Y H:i') }}</td>
-                                    <td class="py-2.5 px-2 text-slate-500">{{ $sale->customer?->name ?? '-' }}</td>
+                                    {{-- <td class="py-2.5 px-2 text-slate-500">{{ $sale->customer?->name ?? '-' }}</td> --}}
                                     <td class="py-2.5 px-2 text-right font-semibold text-slate-800">Rp
                                         {{ number_format($sale->grand_amount, 0, ',', '.') }}</td>
                                     <td class="py-2.5 px-2">
@@ -379,8 +379,8 @@
                                 <div>
                                     <p class="text-sm font-medium text-slate-800" x-text="held.code"></p>
                                     <p class="text-xs text-slate-400">
-                                        <span x-text="held.customer_name || 'Umum'"></span>
-                                        &middot;
+                                        {{-- <span x-text="held.customer_name || 'Umum'"></span>
+                                        &middot; --}}
                                         <span x-text="held.item_count + ' item'"></span>
                                     </p>
                                 </div>
@@ -434,7 +434,7 @@
                 'id' => $h->id,
                 'code' => $h->code,
                 'customer_name' => $h->customer?->name,
-                'item_count' => $h->items_count,
+                'item_count' => is_array($h->items) ? count($h->items) : 0,
             ],
         )
         ->values();
