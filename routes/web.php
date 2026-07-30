@@ -97,10 +97,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/suppliers/{supplier}', [MasterDataController::class, 'updateSupplier'])->name('suppliers.update');
         Route::patch('/suppliers/{supplier}/toggle', [MasterDataController::class, 'toggleSupplier'])->name('suppliers.toggle');
 
-        // Route::get('/customers', [MasterDataController::class, 'customers'])->name('customers');
-        // Route::post('/customers', [MasterDataController::class, 'storeCustomer'])->name('customers.store');
-        // Route::put('/customers/{customer}', [MasterDataController::class, 'updateCustomer'])->name('customers.update');
-        // Route::patch('/customers/{customer}/toggle', [MasterDataController::class, 'toggleCustomer'])->name('customers.toggle');
+        Route::get('/customers', [MasterDataController::class, 'customers'])->name('customers');
+        Route::post('/customers', [MasterDataController::class, 'storeCustomer'])->name('customers.store');
+        Route::put('/customers/{customer}', [MasterDataController::class, 'updateCustomer'])->name('customers.update');
+        Route::patch('/customers/{customer}/toggle', [MasterDataController::class, 'toggleCustomer'])->name('customers.toggle');
 
         Route::get('/discounts', [DiscountRuleController::class, 'index'])->name('discounts');
         Route::post('/discounts', [DiscountRuleController::class, 'store'])->name('discounts.store');

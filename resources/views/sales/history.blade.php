@@ -55,7 +55,7 @@
                     <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
                         <th class="px-5 py-3">Invoice</th>
                         <th class="px-5 py-3">Tanggal</th>
-                        {{-- <th class="px-5 py-3">Customer</th> --}}
+                        <th class="px-5 py-3">Customer</th>
                         <th class="px-5 py-3">Kasir</th>
                         <th class="px-5 py-3">Metode Bayar</th>
                         <th class="px-5 py-3 text-right">Diskon</th>
@@ -68,7 +68,7 @@
                         <tr class="transition-colors hover:bg-slate-50">
                             <td class="px-5 py-3 font-medium text-slate-700">{{ $sale->invoice_number }}</td>
                             <td class="px-5 py-3 text-slate-500">{{ $sale->sale_date->format('d/m/Y H:i') }}</td>
-                            {{-- <td class="px-5 py-3 text-slate-500">{{ $sale->customer?->name ?? '-' }}</td> --}}
+                            <td class="px-5 py-3 text-slate-500">{{ $sale->customer?->name ?? '-' }}</td>
                             <td class="px-5 py-3 text-slate-500">{{ $sale->user?->name ?? '-' }}</td>
                             <td class="px-5 py-3 capitalize text-slate-500">{{ $sale->payment_method }}</td>
                             <td class="px-5 py-3 text-right text-slate-500">Rp
